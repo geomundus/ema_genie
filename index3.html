@@ -188,7 +188,7 @@
               // For example: e.features[0].properties.Name is retrieving information from the field Name in the original CSV. 
               var description = `<h3>` + e.features[0].properties["Main occupation"] + `</h3>` + 
               `<h4>` + `<b>` + `Address: ` + `</b>` + e.features[0].properties.Adresse + `</h4>` + 
-              `<h4>` + `<b>` + `EMJMD: ` + `</b>` + e.features[0].properties.EMJMD + `<br>Start year: ` + e.features[0].properties["Start year"] + `</h4>`;
+              `<h4>` + `<b>` + `EMJMD: ` + `</b>` + e.features[0].properties.EMJMD + `<br><b>Start year:</b> ` + e.features[0].properties["Start year"] + `</h4>`;
 
               // Ensure that if the map is zoomed out such that multiples
               // copies of the feature are visible, the popup appears
