@@ -249,6 +249,11 @@
                     'circle-radius': 12
                 }
             });
+            // Create a popup, but don't add it to the map yet.
+            var popup = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false
+            });
             map.on('click', 'ema_genie_circle', function (e) {
                 map.flyTo({
                     center:[e.lngLat.lng, e.lngLat.lat],
@@ -276,11 +281,7 @@
                 .setHTML(description)
                 .addTo(map);
             });
-            // Create a popup, but don't add it to the map yet.
-            var popup = new mapboxgl.Popup({
-                closeButton: false,
-                closeOnClick: false
-            });
+
 
             // Change the cursor to a pointer when the mouse is over the ema_genie_circle layer.
             map.on('mouseenter', 'ema_genie_circle', function (e) {
