@@ -221,6 +221,11 @@
                     'circle-radius': 12
                 }
             });
+            map.on('click', 'ema_genie_label', function (e) {
+                map.flyTo({
+                    center:[e.lngLat.lng, e.lngLat.lat],
+                });
+            });
             // Create a popup, but don't add it to the map yet.
             var popup = new mapboxgl.Popup({
                 closeButton: false,
@@ -286,6 +291,14 @@
                     center:[e.lngLat.lng, e.lngLat.lat],
                     zoom: map.getZoom()+ 1
                 });
+            });
+            
+            // Change the cursor to a pointer when the mouse is over the ema_genie_circle layer.
+            map.on('mouseenter', 'ema_genie_label', function (e) {
+              map.getCanvas().style.cursor = 'pointer';
+            });
+            map.on('mouseleave', 'ema_genie_label', function () {
+              map.getCanvas().style.cursor = '';
             });
             // objects for caching and keeping track of HTML marker objects (for performance)
             var markers = {};
