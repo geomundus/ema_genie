@@ -153,7 +153,7 @@
 
               //add Popup to map
 
-              new mapboxgl.Popup()
+              var popup = new mapboxgl.Popup()
                 .setLngLat(coordinates)
                 .setHTML(description)
                 .addTo(map);
@@ -165,7 +165,7 @@
             });
 
             // Change it back to a pointer when it leaves.
-            map.on('mouseleave', 'places', function () {
+            map.on('mouseleave', 'csvData', function () {
               map.getCanvas().style.cursor = '';
             });
 
