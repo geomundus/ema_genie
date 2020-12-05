@@ -28,19 +28,19 @@
 
     map.addControl(new mapboxgl.NavigationControl());
 
-    // filters for classifying earthquakes into five categories based on magnitude
+    // filters for classifying ema_genie into five categories based on magnitude
     var occupation1 = ['==', ['get', 'Main occupation'], 'I recently graduated and I am looking for a job'];
     var occupation2 = ['==', ['get', 'Main occupation'], 'I work in a private company'];
     var occupation3 = ['==', ['get', 'Main occupation'], 'I am a 1st year Master student'];
     var occupation4 = ['==', ['get', 'Main occupation'], 'I work for the government'];
     var occupation5 = ['==', ['get', 'Main occupation'], 'I am a researcher/doing my PhD'];
     var occupation6 = ['==', ['get', 'Main occupation'], 'I work at a university or public institute'];
-    var occupation7 = ['all', ['<>', ['get', 'Main occupation'], 'I recently graduated and I am looking for a job'], 
-                              ['<>', ['get', 'Main occupation'], 'I work in a private company'],
-                              ['<>', ['get', 'Main occupation'], 'I am a 1st year Master student'],
-                              ['<>', ['get', 'Main occupation'], 'I work for the government'],
-                              ['<>', ['get', 'Main occupation'], 'I am a researcher/doing my PhD'],
-                              ['<>', ['get', 'Main occupation'], 'I work at a university or public institute']];
+    var occupation7 = ['all', ['!=', ['get', 'Main occupation'], 'I recently graduated and I am looking for a job'], 
+                              ['!=', ['get', 'Main occupation'], 'I work in a private company'],
+                              ['!=', ['get', 'Main occupation'], 'I am a 1st year Master student'],
+                              ['!=', ['get', 'Main occupation'], 'I work for the government'],
+                              ['!=', ['get', 'Main occupation'], 'I am a researcher/doing my PhD'],
+                              ['!=', ['get', 'Main occupation'], 'I work at a university or public institute']];
 
     // colors to use for the categories
     //var colors = ['#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c'];
@@ -66,7 +66,7 @@
         }, function (err, data) {
 
         map.on('load', function () {
-            // add a clustered GeoJSON source for a sample set of earthquakes
+            // add a clustered GeoJSON source for a sample set of ema_genie
             map.addSource('ema_genie', {
                 'type': 'geojson',
                 'data': data,
@@ -144,7 +144,7 @@
 
             function updateMarkers() {
                 var newMarkers = {};
-                var features = map.querySourceFeatures('earthquakes');
+                var features = map.querySourceFeatures('ema_genie');
 
                 // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
                 // and add it to the map if it's not there already
