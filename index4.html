@@ -226,14 +226,7 @@
                 closeButton: false,
                 closeOnClick: false
             });
-                        // When a click event occurs on a feature in the csvData layer, open a popup at the
-            // location of the feature, with description HTML from its properties.
-            map.on('click', 'ema_genie_circle', function (e) {
-                map.flyTo({
-                    center:[e.lngLat.lng, e.lngLat.lat],
-                    zoom: map.getZoom()+ 1.5
-                });
-            });
+
             // Change the cursor to a pointer when the mouse is over the ema_genie_circle layer.
             map.on('mouseenter', 'ema_genie_circle', function (e) {
               map.getCanvas().style.cursor = 'pointer';
@@ -286,7 +279,14 @@
                     'text-color': ['case',['<', ['get', 'Main occupation'], 3],'black','white']
                 }
             });
-
+            // When a click event occurs on a feature in the csvData layer, open a popup at the
+            // location of the feature, with description HTML from its properties.
+            map.on('click', 'ema_genie_label', function (e) {
+                map.flyTo({
+                    center:[e.lngLat.lng, e.lngLat.lat],
+                    zoom: map.getZoom()+ 1
+                });
+            });
             // objects for caching and keeping track of HTML marker objects (for performance)
             var markers = {};
             var markersOnScreen = {};
