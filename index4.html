@@ -70,12 +70,40 @@
     .mapboxgl-popup-anchor-top>.mapboxgl-popup-tip {
       border-bottom-color: rgb(61, 59, 59);
     }
+    .filter-ctrl {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1;
+        }
+        
+        .filter-ctrl input[type='text'] {
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        width: 100%;
+        border: 0;
+        background-color: #fff;
+        margin: 0;
+        color: rgba(0, 0, 0, 0.5);
+        padding: 10px;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+        width: 180px;
+    }
 </style>
 </head>
 <body>
 <div id="map"></div>
-
+<div class="filter-ctrl">
+    <input
+    id="filter-input"
+    type="text"
+    name="filter"
+    placeholder="Filter by name"
+    />
+    </div>
 <script>
+    var layerIDs = []; // Will contain a list used to filter against.
+    var filterInput = document.getElementById('filter-input');
 	mapboxgl.accessToken = 'pk.eyJ1IjoiZ2VvbXVuZHVzIiwiYSI6ImNqM3BoMDVlYjAwam8zMnBmNm1ndWs3bnYifQ.McVUJig2reapiExh7EPOpw';
     var map = new mapboxgl.Map({
         container: 'map',
@@ -114,8 +142,6 @@
         success: function (csvData) { makeGeoJSON(csvData); }
       });
 
-
-
       function makeGeoJSON(csvData) {
 
         csv2geojson.csv2geojson(csvData, {
@@ -143,7 +169,29 @@
                 }
             });
 
-
+            data.features.forEach(function (feature) {
+                var symbol = feature.properties['Start year'];
+                var layerID = 'poi-' + symbol;
+                
+                // Add a layer for this symbol type if it hasn't been added already.
+                if (!map.getLayer(layerID)) {
+                
+                    layerIDs.push(layerID);
+                    }
+                });
+                
+                filterInput.addEventListener('keyup', function (e) {
+                    // If the input value matches a layerID set
+                    // it's visibility to 'visible' or else hide it.
+                    var value = e.target.value.trim().toLowerCase();
+                        layerIDs.forEach(function (layerID) {
+                        map.setLayoutProperty(
+                        layerID,
+                        'visibility',
+                        layerID.indexOf(value) > -1 ? 'visible' : 'none'
+                    );
+                });
+            });
             // circle and symbol layers for rendering individual ema_genie (unclustered points)
             map.addLayer({
                 'id': 'ema_genie_circle',
@@ -177,6 +225,14 @@
             var popup = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false
+            });
+                        // When a click event occurs on a feature in the csvData layer, open a popup at the
+            // location of the feature, with description HTML from its properties.
+            map.on('click', 'ema_genie_circle', function (e) {
+                map.flyTo({
+                    center:[e.lngLat.lng, e.lngLat.lat],
+                    zoom: map.getZoom()+ 1.5
+                });
             });
             // Change the cursor to a pointer when the mouse is over the ema_genie_circle layer.
             map.on('mouseenter', 'ema_genie_circle', function (e) {
