@@ -254,10 +254,7 @@
                 closeButton: false,
                 closeOnClick: false
             });
-            map.on('click', 'ema_genie_circle', function (e) {
-                map.flyTo({
-                    center:[e.lngLat.lng, e.lngLat.lat],
-                });
+            function updatePopup(e){
                 var coordinates = e.features[0].geometry.coordinates.slice();
 
                 //set popup text 
@@ -275,40 +272,26 @@
                 }
 
                 //add Popup to map
-
                 popup = new mapboxgl.Popup()
                 .setLngLat(coordinates)
                 .setHTML(description)
                 .addTo(map);
+            }
+            map.on('click', 'ema_genie_circle', function (e) {
+                map.flyTo({
+                    center:[e.lngLat.lng, e.lngLat.lat],
+                });
+
+                updatePopup(e);
+
             });
 
 
             // Change the cursor to a pointer when the mouse is over the ema_genie_circle layer.
             map.on('mouseenter', 'ema_genie_circle', function (e) {
               map.getCanvas().style.cursor = 'pointer';
-              var coordinates = e.features[0].geometry.coordinates.slice();
-
-              //set popup text 
-              //You can adjust the values of the popup to match the headers of your CSV. 
-              // For example: e.features[0].properties.Name is retrieving information from the field Name in the original CSV. 
-              var description = `<h3>` + e.features[0].properties["Main occupation"] + `</h3>` + 
-              `<h4>` + `<b>` + `Address: ` + `</b>` + e.features[0].properties.Adresse + `</h4>` + 
-              `<h4>` + `<b>` + `EMJMD: ` + `</b>` + e.features[0].properties.EMJMD + `<br><b>Start year:</b> ` + e.features[0].properties["Start year"] + `</h4>`;
-
-              // Ensure that if the map is zoomed out such that multiples
-              // copies of the feature are visible, the popup appears
-              // over the copy being pointed to.
-              while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-              }
-
-              //add Popup to map
-
-              popup = new mapboxgl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(description)
-                .addTo(map);
-
+              
+              updatePopup(e);
             });
 
             // Change it back to a pointer when it leaves.
