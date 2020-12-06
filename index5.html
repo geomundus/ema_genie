@@ -494,7 +494,7 @@
                     
                     link.onclick = function (e) {
                         var clickedLayer = this.layerId;
-                        var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.id!==id); 
+                        var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.id!==clickedLayer); 
                         e.preventDefault();
                         e.stopPropagation();
                         
