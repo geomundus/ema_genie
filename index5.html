@@ -492,6 +492,7 @@
                             marker = markers[id] = new mapboxgl.Marker({
                                 element: el
                             }).setLngLat(coords);
+                        
                         }
                         newMarkers[id] = marker;
 
@@ -508,13 +509,8 @@
                 map.on('data', function (e) {
                     if ((e.sourceId !== 'ema_genie' && e.sourceId !== 'ema_genie_fieldOfStudy') || !e.isSourceLoaded) return;
 
-                    map.on('move', function(){
-                        updateMarkers();
-                    });
-
-                    map.on('moveend', function(){
-                        updateMarkers();
-                    });
+                    map.on('move',updateMarkers);
+                    map.on('moveend',updateMarkers);
 
                     updateMarkers();
                 });
