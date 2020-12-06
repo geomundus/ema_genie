@@ -462,20 +462,20 @@
                 // after the GeoJSON data is loaded, update markers on the screen and do so on every map move/moveend
                 map.on('data', function (e) {
                     if (e.sourceId !== 'ema_genie' || !e.isSourceLoaded) return;
-                    if (e.sourceId !== 'ema_genie_fieldOfStudy' || !e.isSourceLoaded) return;
+                    //if (e.sourceId !== 'ema_genie_fieldOfStudy' || !e.isSourceLoaded) return;
 
                     map.on('move', function(){
                         updateMarkers('ema_genie');
-                        updateMarkers('ema_genie_fieldOfStudy');
+                        //updateMarkers('ema_genie_fieldOfStudy');
                     });
 
                     map.on('moveend', function(){
                         updateMarkers('ema_genie');
-                        updateMarkers('ema_genie_fieldOfStudy');
+                        //updateMarkers('ema_genie_fieldOfStudy');
                     });
 
                     updateMarkers('ema_genie');
-                    updateMarkers('ema_genie_fieldOfStudy');
+                    //updateMarkers('ema_genie_fieldOfStudy');
                 });
                                 
                 // objects for caching and keeping track of HTML marker objects (for performance)
@@ -514,29 +514,15 @@
                 // code for creating an SVG donut chart from feature properties
                 function createDonutChart(props) {
                     var offsets = [];
-                    var counts = [];
-                    if(props.hasOwnProperty("occupation1")){
-                        counts = [
-                            props.occupation1,
-                            props.occupation2,
-                            props.occupation3,
-                            props.occupation4,
-                            props.occupation5,
-                            props.occupation6,
-                            props.occupation7
-                        ];
-                    }
-                    if(props.hasOwnProperty("fieldOfStudy1")){
-                        counts = [
-                            props.fieldOfStudy1,
-                            props.fieldOfStudy2,
-                            props.fieldOfStudy3,
-                            props.fieldOfStudy4,
-                            props.fieldOfStudy5,
-                            props.fieldOfStudy6,
-                            props.fieldOfStudy7
-                        ];
-                    }
+                    var counts = [
+                        props.occupation1,
+                        props.occupation2,
+                        props.occupation3,
+                        props.occupation4,
+                        props.occupation5,
+                        props.occupation6,
+                        props.occupation7
+                    ];
                     var total = 0;
                     for (var i = 0; i < counts.length; i++) {
                         offsets.push(total);
