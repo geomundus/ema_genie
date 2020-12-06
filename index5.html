@@ -498,16 +498,15 @@
                         e.preventDefault();
                         e.stopPropagation();
                         
-                        var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
-                        
+                        $("#menu .active").removeClass("active");
+
                         // toggle layer visibility by changing the layout object's visibility property
                         map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
                         showLegendByLayer(clickedLayer)
                         this.className = 'active';
-                        for(var i; i < notclickedLayers.length; i++){
-                            map.setLayoutProperty(i.id, 'visibility', 'none');
-                            hideLegendByLayer(id.id)
-                            this.className = '';
+                        for(var layer; i < notclickedLayers.length; i++){
+                            map.setLayoutProperty(layer.id, 'visibility', 'none');
+                            hideLegendByLayer(layer.id)
                         }
                     };
                     
