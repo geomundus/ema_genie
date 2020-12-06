@@ -463,7 +463,7 @@
                 var markers = {};
                 var markersOnScreen = {};
 
-                function updateMarkers() {
+                map.updateMarkers = function() {
                     var newMarkers = {};
                     var features = [];
                     if(map.querySourceFeatures("ema_genie").length>0){
@@ -509,10 +509,10 @@
                 map.on('data', function (e) {
                     if ((e.sourceId !== 'ema_genie' && e.sourceId !== 'ema_genie_fieldOfStudy') || !e.isSourceLoaded) return;
 
-                    map.on('move',updateMarkers);
-                    map.on('moveend',updateMarkers);
+                    map.on('move',this.updateMarkers);
+                    map.on('moveend',this.updateMarkers);
 
-                    updateMarkers();
+                    map.updateMarkers();
                 });
 
 
@@ -537,7 +537,7 @@
                         var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.source!==clickedLayerSource); 
                         e.preventDefault();
                         e.stopPropagation();
-                        updateMarkers();
+                        map.updateMarkers();
                         $("#menu .active").removeClass("active");
 
                         // toggle layer visibility by changing the layout object's visibility property
