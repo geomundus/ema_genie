@@ -196,7 +196,7 @@
             var color = colors[i];
             var item = document.createElement('div');
             item.className = className;
-            item.style.display="none";
+            item.style.visibility="hidden";
             var key = document.createElement('span');
             key.className = 'legend-key';
             key.style.backgroundColor = color;
@@ -334,6 +334,9 @@
                     'type': 'circle',
                     'source': 'ema_genie_fieldOfStudy',
                     'filter': ['!=', 'cluster', true],
+                    'layout': {
+                        'visibility': 'visible'
+                        },
                     'paint': {
                         'circle-color': [
                             'case',
@@ -357,7 +360,6 @@
                         'circle-radius': 12
                     }
                 });
-                map.removeLayer('ema_genie_fieldOfStudy_circle');
 
                 data.features.forEach(function (feature) {
                     var symbol = feature.properties['Start year'];
@@ -453,6 +455,7 @@
                     'source': 'ema_genie_fieldOfStudy',
                     'filter': ['!=', 'cluster', true],
                     'layout': {
+                        'visibility': 'visible',
                         'text-field': [
                             'number-format',
                             ['get', 'mag'],
@@ -465,7 +468,6 @@
                         'text-color': ['case',['<', ['get', 'Field of study'], 3],'black','white']
                     }
                 });
-                map.removeLayer('ema_genie_fieldOfStudy_label');
 
                 // after the GeoJSON data is loaded, update markers on the screen and do so on every map move/moveend
                 map.on('data', function (e) {
