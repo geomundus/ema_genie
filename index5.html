@@ -464,133 +464,15 @@
                     if ((e.sourceId !== 'ema_genie' && e.sourceId !== 'ema_genie_fieldOfStudy') || !e.isSourceLoaded) return;
 
                     map.on('move', function(){
-                        updateMarkers(e.sourceId);
+                        updateMarkers();
                     });
 
                     map.on('moveend', function(){
-                        updateMarkers(e.sourceId);
+                        updateMarkers();
                     });
 
-                    updateMarkers(e.sourceId);
+                    updateMarkers();
                 });
-                                
-                // objects for caching and keeping track of HTML marker objects (for performance)
-                var markers = {};
-                var markersOnScreen = {};
-
-                function updateMarkers(source) {
-                    var newMarkers = {};
-                    var features = map.querySourceFeatures(source);
-
-                    // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
-                    // and add it to the map if it's not there already
-                    for (var i = 0; i < features.length; i++) {
-                        var coords = features[i].geometry.coordinates;
-                        var props = features[i].properties;
-                        if (!props.cluster) continue;
-                        var id = props.cluster_id;
-
-                        var marker = markers[id];
-                        if (!marker) {
-                            var el = createDonutChart(props);
-                            marker = markers[id] = new mapboxgl.Marker({
-                                element: el
-                            }).setLngLat(coords);
-                        }else{
-                            marker.remove();
-                            var el = createDonutChart(props);
-                            marker = markers[id] = new mapboxgl.Marker({
-                                element: el
-                            }).setLngLat(coords);
-                        }
-                        newMarkers[id] = marker;
-
-                        if (!markersOnScreen[id]) marker.addTo(map);
-                    }
-                    // for every marker we've added previously, remove those that are no longer visible
-                    for (id in markersOnScreen) {
-                        if (!newMarkers[id]) markersOnScreen[id].remove();
-                    }
-                    markersOnScreen = newMarkers;
-                }   
-                // code for creating an SVG donut chart from feature properties
-                function createDonutChart(props) {
-                    var offsets = [];
-                    var counts = [];
-                    if(props.occupation1!==undefined){
-                        counts = [
-                            props.occupation1,
-                            props.occupation2,
-                            props.occupation3,
-                            props.occupation4,
-                            props.occupation5,
-                            props.occupation6,
-                            props.occupation7
-                        ];
-                    }else if(props.fieldOfStudy1!==undefined){
-                        counts = [
-                            props.fieldOfStudy1,
-                            props.fieldOfStudy2,
-                            props.fieldOfStudy3,
-                            props.fieldOfStudy4,
-                            props.fieldOfStudy5,
-                            props.fieldOfStudy6,
-                            props.fieldOfStudy7
-                        ];
-                    }
-
-                    var total = 0;
-                    for (var i = 0; i < counts.length; i++) {
-                        offsets.push(total);
-                        total += counts[i];
-                    }
-                    var fontSize =
-                        total >= 1000 ? 22 : total >= 100 ? 20 : total >= 10 ? 18 : 16;
-                    var r = total >= 1000 ? 50 : total >= 100 ? 32 : total >= 10 ? 24 : 18;
-                    var r0 = Math.round(r * 0.6);
-                    var w = r * 2;
-
-                    var html =
-                        '<div><svg width="' +
-                        w +
-                        '" height="' +
-                        w +
-                        '" viewbox="0 0 ' +
-                        w +
-                        ' ' +
-                        w +
-                        '" text-anchor="middle" style="font: ' +
-                        fontSize +
-                        'px sans-serif; display: block">';
-
-                    for (i = 0; i < counts.length; i++) {
-                        html += donutSegment(
-                            offsets[i] / total,
-                            (offsets[i] + counts[i]) / total,
-                            r,
-                            r0,
-                            colors[i]
-                        );
-                    }
-                    html +=
-                        '<circle cx="' +
-                        r +
-                        '" cy="' +
-                        r +
-                        '" r="' +
-                        r0 +
-                        '" fill="white" /><text dominant-baseline="central" transform="translate(' +
-                        r +
-                        ', ' +
-                        r +
-                        ')">' +
-                        total.toLocaleString() +
-                        '</text></svg></div>';
-
-                    var el = document.createElement('div');
-                    el.innerHTML = html;
-                    return el.firstChild;
-                }
 
 
                 var toggleableLayers = [{source: 'ema_genie',id:'ema_genie_circle',name:'Occupation',className:'active'}, {source:'ema_genie_fieldOfStudy',id:'ema_genie_fieldOfStudy_circle',name:'Field of study',className:''}];
@@ -614,7 +496,7 @@
                         var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.source!==clickedLayerSource); 
                         e.preventDefault();
                         e.stopPropagation();
-                        updateMarkers(clickedLayerSource);
+                        updateMarkers();
                         $("#menu .active").removeClass("active");
 
                         // toggle layer visibility by changing the layout object's visibility property
@@ -635,7 +517,124 @@
     };
 });
  
+                                
+// objects for caching and keeping track of HTML marker objects (for performance)
+var markers = {};
+var markersOnScreen = {};
 
+function updateMarkers() {
+    var newMarkers = {};
+    var features = map.querySourceFeatures("ema_genie").length ? map.querySourceFeatures("ema_genie"): map.querySourceFeatures("ema_genie_fieldOfStudy");
+
+    // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
+    // and add it to the map if it's not there already
+    for (var i = 0; i < features.length; i++) {
+        var coords = features[i].geometry.coordinates;
+        var props = features[i].properties;
+        if (!props.cluster) continue;
+        var id = props.cluster_id;
+
+        var marker = markers[id];
+        if (!marker) {
+            var el = createDonutChart(props);
+            marker = markers[id] = new mapboxgl.Marker({
+                element: el
+            }).setLngLat(coords);
+        }else{
+            marker.remove();
+            var el = createDonutChart(props);
+            marker = markers[id] = new mapboxgl.Marker({
+                element: el
+            }).setLngLat(coords);
+        }
+        newMarkers[id] = marker;
+
+        if (!markersOnScreen[id]) marker.addTo(map);
+    }
+    // for every marker we've added previously, remove those that are no longer visible
+    for (id in markersOnScreen) {
+        if (!newMarkers[id]) markersOnScreen[id].remove();
+    }
+    markersOnScreen = newMarkers;
+}   
+// code for creating an SVG donut chart from feature properties
+function createDonutChart(props) {
+    var offsets = [];
+    var counts = [];
+    if(props.occupation1!==undefined){
+        counts = [
+            props.occupation1,
+            props.occupation2,
+            props.occupation3,
+            props.occupation4,
+            props.occupation5,
+            props.occupation6,
+            props.occupation7
+        ];
+    }else if(props.fieldOfStudy1!==undefined){
+        counts = [
+            props.fieldOfStudy1,
+            props.fieldOfStudy2,
+            props.fieldOfStudy3,
+            props.fieldOfStudy4,
+            props.fieldOfStudy5,
+            props.fieldOfStudy6,
+            props.fieldOfStudy7
+        ];
+    }
+
+    var total = 0;
+    for (var i = 0; i < counts.length; i++) {
+        offsets.push(total);
+        total += counts[i];
+    }
+    var fontSize =
+        total >= 1000 ? 22 : total >= 100 ? 20 : total >= 10 ? 18 : 16;
+    var r = total >= 1000 ? 50 : total >= 100 ? 32 : total >= 10 ? 24 : 18;
+    var r0 = Math.round(r * 0.6);
+    var w = r * 2;
+
+    var html =
+        '<div><svg width="' +
+        w +
+        '" height="' +
+        w +
+        '" viewbox="0 0 ' +
+        w +
+        ' ' +
+        w +
+        '" text-anchor="middle" style="font: ' +
+        fontSize +
+        'px sans-serif; display: block">';
+
+    for (i = 0; i < counts.length; i++) {
+        html += donutSegment(
+            offsets[i] / total,
+            (offsets[i] + counts[i]) / total,
+            r,
+            r0,
+            colors[i]
+        );
+    }
+    html +=
+        '<circle cx="' +
+        r +
+        '" cy="' +
+        r +
+        '" r="' +
+        r0 +
+        '" fill="white" /><text dominant-baseline="central" transform="translate(' +
+        r +
+        ', ' +
+        r +
+        ')">' +
+        total.toLocaleString() +
+        '</text></svg></div>';
+
+    var el = document.createElement('div');
+    el.innerHTML = html;
+    return el.firstChild;
+}
 function donutSegment(start, end, r, r0, color) {
     if (end - start === 1) end -= 0.00001;
     var a0 = 2 * Math.PI * (start - 0.25);
