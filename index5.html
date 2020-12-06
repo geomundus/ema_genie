@@ -502,8 +502,8 @@
                 map.on('data', function (e) {
                     if ((e.sourceId !== 'ema_genie' && e.sourceId !== 'ema_genie_fieldOfStudy') || !e.isSourceLoaded) return;
 
-                    map.on('move',this.updateMarkers);
-                    map.on('moveend',this.updateMarkers);
+                    map.on('move',map.updateMarkers);
+                    map.on('moveend',map.updateMarkers);
 
                     map.updateMarkers();
                 });
