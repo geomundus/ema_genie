@@ -208,10 +208,10 @@
         }
         $("#legend ." + className).hide();
     }
-    function hideLegendByLayer(layerId){
+    map.hideLegendByLayer = function (layerId){
         $("#legend ." + layerId).hide();
     }
-    function showLegendByLayer(layerId){
+    map.showLegendByLayer = function(layerId){
         $("#legend ." + layerId).show();
     }
 
@@ -502,11 +502,11 @@
 
                         // toggle layer visibility by changing the layout object's visibility property
                         map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
-                        showLegendByLayer(clickedLayer)
+                        map.showLegendByLayer(clickedLayer)
                         this.className = 'active';
                         for(var i; i < notclickedLayers.length; i++){
                             map.setLayoutProperty(notclickedLayers[i].id, 'visibility', 'none');
-                            hideLegendByLayer(notclickedLayers[i].id)
+                            map.hideLegendByLayer(notclickedLayers[i].id)
                         }
                     };
                     
