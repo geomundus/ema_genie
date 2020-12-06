@@ -488,16 +488,17 @@
                 });
 
                 // enumerate ids of the layers
-                var toggleableLayers = [{id:'ema_genie_circle',name:'Occupations'}, {id:'ema_genie_fieldOfStudy_circle',name:'Field of study'}];
+                var toggleableLayers = [{id:'ema_genie_circle',name:'Occupations',className:'active'}, {id:'ema_genie_fieldOfStudy_circle',name:'Field of study',className:''}];
                 
                 // set up the corresponding toggle button for each layer
                 for (var i = 0; i < toggleableLayers.length; i++) {
                     var id = toggleableLayers[i].id;
                     var name = toggleableLayers[i].name;
+                    var className = toggleableLayers[i].className;
                     var layer = map.getLayer(id);
                     var link = document.createElement('a');
                     link.href = '#';
-                    link.className = layer.isHidden() ? '' : 'active';
+                    link.className = className;
                     link.textContent = name;
                     link.layerId = id;
                     
