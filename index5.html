@@ -168,7 +168,7 @@
 <nav id="menu"></nav>
 <div id="map"></div>
 <div class="filter-ctrl">
-    <input id="filter-input" type="text" name="filter" placeholder="Filter by text" />
+    <input id="filter-input" type="text" name="filter" placeholder="Filter by text"/>
 </div>
 <div class='map-overlay' id='legend'></div>
 <script>
@@ -206,6 +206,13 @@
             legend.appendChild(item);
         }
     }
+    function hideLegendBySource(source){
+        $("." + source).hide();
+    }
+    function showLegendBySource(source){
+        $("." + source).show();
+    }
+
     fillLegend(occupations,'occupations');
     fillLegend(fieldOfStudies,'fieldOfStudies');
 
@@ -347,6 +354,8 @@
                         'circle-radius': 12
                     }
                 });
+                map.removeLayer('ema_genie_fieldOfStudy_circle');
+                hideLegendBySource('ema_genie_fieldOfStudy');
 
                 data.features.forEach(function (feature) {
                     var symbol = feature.properties['Start year'];
@@ -454,6 +463,7 @@
                         'text-color': ['case',['<', ['get', 'Field of study'], 3],'black','white']
                     }
                 });
+                map.removeLayer('ema_genie_fieldOfStudy_label');
 
                 // after the GeoJSON data is loaded, update markers on the screen and do so on every map move/moveend
                 map.on('data', function (e) {
