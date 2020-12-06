@@ -196,7 +196,6 @@
             var color = colors[i];
             var item = document.createElement('div');
             item.className = className;
-            item.style.visibility="hidden";
             var key = document.createElement('span');
             key.className = 'legend-key';
             key.style.backgroundColor = color;
@@ -207,6 +206,7 @@
             item.appendChild(value);
             legend.appendChild(item);
         }
+        $("." + className).hide();
     }
     function hideLegendByLayer(layerId){
         $("." + layerId).hide();
