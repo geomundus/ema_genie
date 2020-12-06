@@ -515,10 +515,27 @@
                 function createDonutChart(props) {
                     var offsets = [];
                     var counts = [];
-                    for (var key in props){
-                        if(props.hasOwnProperty(key)){
-                            counts.push(props[key]);
-                        }
+                    if(props.hasOwnProperty("occupation1"){
+                        counts = [
+                            props.occupation1,
+                            props.occupation2,
+                            props.occupation3,
+                            props.occupation4,
+                            props.occupation5,
+                            props.occupation6,
+                            props.occupation7
+                        ];
+                    }
+                    if(props.hasOwnProperty("fieldOfStudy1"){
+                        counts = [
+                            props.fieldOfStudy1,
+                            props.fieldOfStudy2,
+                            props.fieldOfStudy3,
+                            props.fieldOfStudy4,
+                            props.fieldOfStudy5,
+                            props.fieldOfStudy6,
+                            props.fieldOfStudy7
+                        ];
                     }
                     var total = 0;
                     for (var i = 0; i < counts.length; i++) {
