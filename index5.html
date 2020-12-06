@@ -195,8 +195,9 @@
             var layer = listOfValues[i];
             var color = colors[i];
             var item = document.createElement('div');
+            item.className = className;
             var key = document.createElement('span');
-            key.className = 'legend-key' + ' ' + className;
+            key.className = 'legend-key';
             key.style.backgroundColor = color;
 
             var value = document.createElement('span');
