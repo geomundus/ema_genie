@@ -530,8 +530,9 @@
                         var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.source!==clickedLayerSource); 
                         e.preventDefault();
                         e.stopPropagation();
-                        map.markers = {};
-                        map.markersOnScreen = {};
+                        for (id in map.markersOnScreen) {
+                            map.markersOnScreen[id].remove();
+                        }
                         map.updateMarkers();
                         $("#menu .active").removeClass("active");
 
