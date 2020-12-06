@@ -524,7 +524,7 @@ var markersOnScreen = {};
 
 function updateMarkers() {
     var newMarkers = {};
-    var features = map.querySourceFeatures("ema_genie").length ? map.querySourceFeatures("ema_genie"): map.querySourceFeatures("ema_genie_fieldOfStudy");
+    var features = map.querySourceFeatures("ema_genie").length>0 ? map.querySourceFeatures("ema_genie"): map.querySourceFeatures("ema_genie_fieldOfStudy");
 
     // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
     // and add it to the map if it's not there already
