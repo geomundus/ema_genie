@@ -323,7 +323,7 @@
                             colors[6],
                             colors[7]
                         ],
-                        'circle-opacity': 0.8,
+                        'circle-opacity': 0.9,
                         'circle-radius': 12
                     }
                 });
@@ -354,7 +354,7 @@
                             colors[6],
                             colors[7]
                         ],
-                        'circle-opacity': 0.8,
+                        'circle-opacity': 0.9,
                         'circle-radius': 12
                     }
                 });
@@ -460,8 +460,8 @@
                 });
                                                 
                 // objects for caching and keeping track of HTML marker objects (for performance)
-                var markers = {};
-                var markersOnScreen = {};
+                map.markers = {};
+                map.markersOnScreen = {};
 
                 map.updateMarkers = function() {
                     var newMarkers = {};
@@ -530,6 +530,8 @@
                         var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.source!==clickedLayerSource); 
                         e.preventDefault();
                         e.stopPropagation();
+                        map.markers = {};
+                        map.markersOnScreen = {};
                         map.updateMarkers();
                         $("#menu .active").removeClass("active");
 
