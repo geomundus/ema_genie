@@ -476,6 +476,103 @@
                     updateMarkers('ema_genie');
                     updateMarkers('ema_genie_fieldOfStudy');
                 });
+                                
+                // objects for caching and keeping track of HTML marker objects (for performance)
+                var markers = {};
+                var markersOnScreen = {};
+
+                function updateMarkers(source) {
+                    var newMarkers = {};
+                    var features = map.querySourceFeatures(source);
+
+                    // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
+                    // and add it to the map if it's not there already
+                    for (var i = 0; i < features.length; i++) {
+                        var coords = features[i].geometry.coordinates;
+                        var props = features[i].properties;
+                        if (!props.cluster) continue;
+                        var id = props.cluster_id;
+
+                        var marker = markers[id];
+                        if (!marker) {
+                            console.log(props);
+                            var el = createDonutChart(props);
+                            marker = markers[id] = new mapboxgl.Marker({
+                                element: el
+                            }).setLngLat(coords);
+                        }
+                        newMarkers[id] = marker;
+
+                        if (!markersOnScreen[id]) marker.addTo(map);
+                    }
+                    // for every marker we've added previously, remove those that are no longer visible
+                    for (id in markersOnScreen) {
+                        if (!newMarkers[id]) markersOnScreen[id].remove();
+                    }
+                    markersOnScreen = newMarkers;
+                }   
+                // code for creating an SVG donut chart from feature properties
+                function createDonutChart(props) {
+                    var offsets = [];
+                    var counts = [];
+                    for (var key in props){
+                        if(props.hasOwnProperty(key)){
+                            counts.push(key);
+                        }
+                    }
+                    var total = 0;
+                    for (var i = 0; i < counts.length; i++) {
+                        offsets.push(total);
+                        total += counts[i];
+                    }
+                    var fontSize =
+                        total >= 1000 ? 22 : total >= 100 ? 20 : total >= 10 ? 18 : 16;
+                    var r = total >= 1000 ? 50 : total >= 100 ? 32 : total >= 10 ? 24 : 18;
+                    var r0 = Math.round(r * 0.6);
+                    var w = r * 2;
+
+                    var html =
+                        '<div><svg width="' +
+                        w +
+                        '" height="' +
+                        w +
+                        '" viewbox="0 0 ' +
+                        w +
+                        ' ' +
+                        w +
+                        '" text-anchor="middle" style="font: ' +
+                        fontSize +
+                        'px sans-serif; display: block">';
+
+                    for (i = 0; i < counts.length; i++) {
+                        html += donutSegment(
+                            offsets[i] / total,
+                            (offsets[i] + counts[i]) / total,
+                            r,
+                            r0,
+                            colors[i]
+                        );
+                    }
+                    html +=
+                        '<circle cx="' +
+                        r +
+                        '" cy="' +
+                        r +
+                        '" r="' +
+                        r0 +
+                        '" fill="white" /><text dominant-baseline="central" transform="translate(' +
+                        r +
+                        ', ' +
+                        r +
+                        ')">' +
+                        total.toLocaleString() +
+                        '</text></svg></div>';
+
+                    var el = document.createElement('div');
+                    el.innerHTML = html;
+                    return el.firstChild;
+                }
+
 
                 var toggleableLayers = [{id:'ema_genie_circle',name:'Occupation',className:'active'}, {id:'ema_genie_fieldOfStudy_circle',name:'Field of study',className:''}];
                 
@@ -490,7 +587,6 @@
                     link.textContent = name;
                     link.dataset.id = id;
     
-                    
                     link.onclick = function (e) {
                         var clickedLayer = this.dataset.id;
                         var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.id!==clickedLayer); 
@@ -517,102 +613,6 @@
     };
 });
  
-
-// objects for caching and keeping track of HTML marker objects (for performance)
-var markers = {};
-var markersOnScreen = {};
-
-function updateMarkers(source) {
-    var newMarkers = {};
-    var features = map.querySourceFeatures(source);
-
-    // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
-    // and add it to the map if it's not there already
-    for (var i = 0; i < features.length; i++) {
-        var coords = features[i].geometry.coordinates;
-        var props = features[i].properties;
-        if (!props.cluster) continue;
-        var id = props.cluster_id;
-
-        var marker = markers[id];
-        if (!marker) {
-            console.log(props);
-            var el = createDonutChart(props);
-            marker = markers[id] = new mapboxgl.Marker({
-                element: el
-            }).setLngLat(coords);
-        }
-        newMarkers[id] = marker;
-
-        if (!markersOnScreen[id]) marker.addTo(map);
-    }
-    // for every marker we've added previously, remove those that are no longer visible
-    for (id in markersOnScreen) {
-        if (!newMarkers[id]) markersOnScreen[id].remove();
-    }
-    markersOnScreen = newMarkers;
-}   
-// code for creating an SVG donut chart from feature properties
-function createDonutChart(props) {
-    var offsets = [];
-    var counts = [];
-    for (var key in props){
-        if(props.hasOwnProperty(key)){
-            counts.push(key);
-        }
-    }
-    var total = 0;
-    for (var i = 0; i < counts.length; i++) {
-        offsets.push(total);
-        total += counts[i];
-    }
-    var fontSize =
-        total >= 1000 ? 22 : total >= 100 ? 20 : total >= 10 ? 18 : 16;
-    var r = total >= 1000 ? 50 : total >= 100 ? 32 : total >= 10 ? 24 : 18;
-    var r0 = Math.round(r * 0.6);
-    var w = r * 2;
-
-    var html =
-        '<div><svg width="' +
-        w +
-        '" height="' +
-        w +
-        '" viewbox="0 0 ' +
-        w +
-        ' ' +
-        w +
-        '" text-anchor="middle" style="font: ' +
-        fontSize +
-        'px sans-serif; display: block">';
-
-    for (i = 0; i < counts.length; i++) {
-        html += donutSegment(
-            offsets[i] / total,
-            (offsets[i] + counts[i]) / total,
-            r,
-            r0,
-            colors[i]
-        );
-    }
-    html +=
-        '<circle cx="' +
-        r +
-        '" cy="' +
-        r +
-        '" r="' +
-        r0 +
-        '" fill="white" /><text dominant-baseline="central" transform="translate(' +
-        r +
-        ', ' +
-        r +
-        ')">' +
-        total.toLocaleString() +
-        '</text></svg></div>';
-
-    var el = document.createElement('div');
-    el.innerHTML = html;
-    return el.firstChild;
-}
 
 function donutSegment(start, end, r, r0, color) {
     if (end - start === 1) end -= 0.00001;
