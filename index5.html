@@ -327,7 +327,7 @@
                         'circle-radius': 12
                     }
                 });
-                showLegendByLayer('ema_genie_circle');
+                map.showLegendByLayer('ema_genie_circle');
 
                 map.addLayer({
                     'id': 'ema_genie_fieldOfStudy_circle',
@@ -477,7 +477,6 @@
                     updateMarkers('ema_genie_fieldOfStudy');
                 });
 
-                // enumerate ids of the layers
                 var toggleableLayers = [{id:'ema_genie_circle',name:'Occupation',className:'active'}, {id:'ema_genie_fieldOfStudy_circle',name:'Field of study',className:''}];
                 
                 // set up the corresponding toggle button for each layer
