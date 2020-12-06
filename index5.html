@@ -167,7 +167,7 @@
 <body>
 <nav id="menu"></nav>
 <div id="map"></div>
-<div class="filter-ctrl">
+<div class="filter-ctrl" style="display: none;">
     <input id="filter-input" type="text" name="filter" placeholder="Filter by text"/>
 </div>
 <div class='map-overlay' id='legend'></div>
@@ -359,14 +359,6 @@
                         'circle-opacity': 0.8,
                         'circle-radius': 12
                     }
-                });
-
-                data.features.forEach(function (feature) {
-                    var symbol = feature.properties['Start year'];
-
-                    filterInput.addEventListener('keyup', function (e) {
-
-                    });
                 });
 
                 // Create a popup, but don't add it to the map yet.
