@@ -608,7 +608,7 @@
                         var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.source!==clickedLayerSource); 
                         e.preventDefault();
                         e.stopPropagation();
-                        
+                        updateMarkers(clickedLayerSource);
                         $("#menu .active").removeClass("active");
 
                         // toggle layer visibility by changing the layout object's visibility property
