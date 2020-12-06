@@ -485,20 +485,21 @@
                 });
 
                 // enumerate ids of the layers
-                var toggleableLayerIds = [{id:'ema_genie_circle',name:'Occupations'}, {id:'ema_genie_fieldOfStudy_circle',name:'Field of study'}];
+                var toggleableLayers = [{id:'ema_genie_circle',name:'Occupations'}, {id:'ema_genie_fieldOfStudy_circle',name:'Field of study'}];
                 
                 // set up the corresponding toggle button for each layer
-                for (var i = 0; i < toggleableLayerIds.length; i++) {
-                    var id = toggleableLayerIds[i].id;
-                    var name = toggleableLayerIds[i].name;
+                for (var i = 0; i < toggleableLayers.length; i++) {
+                    var id = toggleableLayers[i].id;
+                    var name = toggleableLayers[i].name;
                     
                     var link = document.createElement('a');
                     link.href = '#';
                     link.className = 'active';
                     link.textContent = name;
+                    link.layerId = id;
                     
                     link.onclick = function (e) {
-                        var clickedLayer = this.textContent;
+                        var clickedLayer = this.layerId;
                         e.preventDefault();
                         e.stopPropagation();
                         
