@@ -504,9 +504,9 @@
                         map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
                         showLegendByLayer(clickedLayer)
                         this.className = 'active';
-                        for(var layer; i < notclickedLayers.length; i++){
-                            map.setLayoutProperty(layer.id, 'visibility', 'none');
-                            hideLegendByLayer(layer.id)
+                        for(var i; i < notclickedLayers.length; i++){
+                            map.setLayoutProperty(notclickedLayers[i].id, 'visibility', 'none');
+                            hideLegendByLayer(notclickedLayers[i].id)
                         }
                     };
                     
