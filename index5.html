@@ -488,11 +488,11 @@
                     link.href = '#';
                     link.className = className;
                     link.textContent = name;
-                    link.dataset.layerId = id;
+                    link.dataset.id = id;
     
                     
                     link.onclick = function (e) {
-                        var clickedLayer = this.dataset.layerId;
+                        var clickedLayer = this.dataset.id;
                         var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.id!==clickedLayer); 
                         e.preventDefault();
                         e.stopPropagation();
