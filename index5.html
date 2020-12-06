@@ -196,6 +196,7 @@
             var color = colors[i];
             var item = document.createElement('div');
             item.className = className;
+            item.style.display="none";
             var key = document.createElement('span');
             key.className = 'legend-key';
             key.style.backgroundColor = color;
@@ -214,8 +215,8 @@
         $("." + source).show();
     }
 
-    fillLegend(occupations,'ema_genie');
-    fillLegend(fieldOfStudies,'ema_genie_fieldOfStudy');
+    fillLegend(occupations,'ema_genie_circle');
+    fillLegend(fieldOfStudies,'ema_genie_fieldOfStudy_circle');
 
 
     var occupation1 = ['==', ['get', 'Main occupation'], occupations[0]];
@@ -326,6 +327,7 @@
                         'circle-radius': 12
                     }
                 });
+                showLegendBySource('ema_genie_fieldOfStudy');
 
                 map.addLayer({
                     'id': 'ema_genie_fieldOfStudy_circle',
@@ -356,7 +358,6 @@
                     }
                 });
                 map.removeLayer('ema_genie_fieldOfStudy_circle');
-                hideLegendBySource('ema_genie_fieldOfStudy');
 
                 data.features.forEach(function (feature) {
                     var symbol = feature.properties['Start year'];
@@ -491,10 +492,10 @@
                 for (var i = 0; i < toggleableLayers.length; i++) {
                     var id = toggleableLayers[i].id;
                     var name = toggleableLayers[i].name;
-                    
+                    var layer = map.getLayer(id);
                     var link = document.createElement('a');
                     link.href = '#';
-                    link.className = 'active';
+                    link.className = layer.isHidden() ? '' : 'active';
                     link.textContent = name;
                     link.layerId = id;
                     
@@ -507,11 +508,15 @@
                         
                         // toggle layer visibility by changing the layout object's visibility property
                         if (visibility === 'visible') {
-                            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+                            //map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+                            map.removeLayer(clickedLayer);
+                            hideLegendBySource(clickedLayer)
                             this.className = '';
                         } else {
+                            map.addLayer(clickedLayer);
+                            showLegendBySource(clickedLayer)
                             this.className = 'active';
-                            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+                            //map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
                         }
                     };
                     
