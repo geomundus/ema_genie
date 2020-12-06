@@ -461,8 +461,10 @@
 
                 // after the GeoJSON data is loaded, update markers on the screen and do so on every map move/moveend
                 map.on('data', function (e) {
-                    if (e.sourceId !== 'ema_genie' || e.sourceId !== 'ema_genie_fieldOfStudy' || !e.isSourceLoaded) return;
-
+                    if (e.sourceId !== 'ema_genie') return;
+                    if (e.sourceId !== 'ema_genie_fieldOfStudy') return;
+                    if (!e.isSourceLoaded) return;
+                    
                     map.on('move', function(){
                         updateMarkers(e.sourceId);
                     });
