@@ -496,6 +496,12 @@
                             marker = markers[id] = new mapboxgl.Marker({
                                 element: el
                             }).setLngLat(coords);
+                        }else{
+                            marker.remove();
+                            var el = createDonutChart(props);
+                            marker = markers[id] = new mapboxgl.Marker({
+                                element: el
+                            }).setLngLat(coords);
                         }
                         newMarkers[id] = marker;
 
