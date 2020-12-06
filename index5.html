@@ -461,7 +461,8 @@
 
                 // after the GeoJSON data is loaded, update markers on the screen and do so on every map move/moveend
                 map.on('data', function (e) {
-                    if (e.sourceId !== 'ema_genie' || e.sourceId !== 'ema_genie_fieldOfStudy' || !e.isSourceLoaded) return;
+                    if (e.sourceId !== 'ema_genie' || !e.isSourceLoaded) return;
+                    if (e.sourceId !== 'ema_genie_fieldOfStudy' || !e.isSourceLoaded) return;
 
                     map.on('move', function(){
                         updateMarkers('ema_genie');
@@ -495,7 +496,6 @@
 
                         var marker = markers[id];
                         if (!marker) {
-                            console.log(props);
                             var el = createDonutChart(props);
                             marker = markers[id] = new mapboxgl.Marker({
                                 element: el
@@ -517,7 +517,7 @@
                     var counts = [];
                     for (var key in props){
                         if(props.hasOwnProperty(key)){
-                            counts.push(key);
+                            counts.push(props[key]);
                         }
                     }
                     var total = 0;
@@ -602,7 +602,6 @@
                         map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
                         map.showLegendByLayer(clickedLayer);
                         this.className = 'active';
-                        console.log(notclickedLayers);
                         for(var i = 0; i < notclickedLayers.length; i++){                           
                             map.setLayoutProperty(notclickedLayers[i].id, 'visibility', 'none');
                             map.hideLegendByLayer(notclickedLayers[i].id);
