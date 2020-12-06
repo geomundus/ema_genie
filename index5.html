@@ -574,22 +574,25 @@
                 }
 
 
-                var toggleableLayers = [{id:'ema_genie_circle',name:'Occupation',className:'active'}, {id:'ema_genie_fieldOfStudy_circle',name:'Field of study',className:''}];
+                var toggleableLayers = [{source: 'ema_genie',id:'ema_genie_circle',name:'Occupation',className:'active'}, {source:'ema_genie_fieldOfStudy',id:'ema_genie_fieldOfStudy_circle',name:'Field of study',className:''}];
                 
                 // set up the corresponding toggle button for each layer
                 for (var i = 0; i < toggleableLayers.length; i++) {
                     var id = toggleableLayers[i].id;
                     var name = toggleableLayers[i].name;
                     var className = toggleableLayers[i].className;
+                    var source = toggleableLayers[i].source;
                     var link = document.createElement('a');
                     link.href = '#';
                     link.className = className;
                     link.textContent = name;
                     link.dataset.id = id;
+                    link.dataset.source = source;
     
                     link.onclick = function (e) {
                         var clickedLayer = this.dataset.id;
-                        var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.id!==clickedLayer); 
+                        var clickedLayerSource = this.dataset.source;
+                        var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.source!==clickedLayerSource); 
                         e.preventDefault();
                         e.stopPropagation();
                         
@@ -600,8 +603,7 @@
                         map.showLegendByLayer(clickedLayer);
                         this.className = 'active';
                         console.log(notclickedLayers);
-                        for(var i; i < notclickedLayers.length; i++){
-                            
+                        for(var i = 0; i < notclickedLayers.length; i++){                           
                             map.setLayoutProperty(notclickedLayers[i].id, 'visibility', 'none');
                             map.hideLegendByLayer(notclickedLayers[i].id);
                         }
