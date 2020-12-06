@@ -206,13 +206,13 @@
             item.appendChild(value);
             legend.appendChild(item);
         }
-        $("." + className).hide();
+        $("#legend ." + className).hide();
     }
     function hideLegendByLayer(layerId){
-        $("." + layerId).hide();
+        $("#legend ." + layerId).hide();
     }
     function showLegendByLayer(layerId){
-        $("." + layerId).show();
+        $("#legend ." + layerId).show();
     }
 
     fillLegend(occupations,'ema_genie_circle');
