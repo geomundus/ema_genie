@@ -478,7 +478,7 @@
                 });
 
                 // enumerate ids of the layers
-                var toggleableLayers = [{id:'ema_genie_circle',name:'Occupations',className:'active'}, {id:'ema_genie_fieldOfStudy_circle',name:'Field of study',className:''}];
+                var toggleableLayers = [{id:'ema_genie_circle',name:'Occupation',className:'active'}, {id:'ema_genie_fieldOfStudy_circle',name:'Field of study',className:''}];
                 
                 // set up the corresponding toggle button for each layer
                 for (var i = 0; i < toggleableLayers.length; i++) {
@@ -490,29 +490,17 @@
                     link.className = className;
                     link.textContent = name;
                     link.layerId = id;
-                    link.notclickedLayers = toggleableLayers.filter(item => item.id!==id)
     
                     
                     link.onclick = function (e) {
                         var clickedLayer = this.layerId;
-                        var notclickedLayers = this.notclickedLayers;
+                        var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.id!==id); 
                         e.preventDefault();
                         e.stopPropagation();
                         
                         var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
                         
                         // toggle layer visibility by changing the layout object's visibility property
-/*                         if (visibility === 'visible') {
-                            
-                            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
-                            hideLegendByLayer(clickedLayer)
-                            this.className = '';
-
-                        } else {
-                            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
-                            showLegendByLayer(clickedLayer)
-                            this.className = 'active';
-                        } */
                         map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
                         showLegendByLayer(clickedLayer)
                         this.className = 'active';
