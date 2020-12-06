@@ -502,11 +502,11 @@
 
                         // toggle layer visibility by changing the layout object's visibility property
                         map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
-                        map.showLegendByLayer(clickedLayer)
+                        map.showLegendByLayer(clickedLayer);
                         this.className = 'active';
                         for(var i; i < notclickedLayers.length; i++){
                             map.setLayoutProperty(notclickedLayers[i].id, 'visibility', 'none');
-                            map.hideLegendByLayer(notclickedLayers[i].id)
+                            map.hideLegendByLayer(notclickedLayers[i].id);
                         }
                     };
                     
