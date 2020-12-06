@@ -490,6 +490,7 @@
                     link.className = className;
                     link.textContent = name;
                     link.layerId = id;
+    
                     
                     link.onclick = function (e) {
                         var clickedLayer = this.layerId;
@@ -500,6 +501,7 @@
                         
                         // toggle layer visibility by changing the layout object's visibility property
                         if (visibility === 'visible') {
+                            
                             map.setLayoutProperty(clickedLayer, 'visibility', 'none');
                             hideLegendByLayer(clickedLayer)
                             this.className = '';
@@ -537,6 +539,7 @@ function updateMarkers(source) {
 
         var marker = markers[id];
         if (!marker) {
+            console.log(props);
             var el = createDonutChart(props);
             marker = markers[id] = new mapboxgl.Marker({
                 element: el
@@ -557,7 +560,6 @@ function createDonutChart(props) {
     var offsets = [];
     var counts = [];
     for (var key in props){
-        console.log(key);
         if(props.hasOwnProperty(key)){
             counts.push(key);
         }
