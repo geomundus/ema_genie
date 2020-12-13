@@ -514,16 +514,16 @@ var popup;
             //e.stopPropagation();
             //popup.remove()
             map.spiderifierClicked=true;
-            popup = new mapboxgl.Popup({
+/*             popup = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false,
                 offset: MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg)
-            });
-
+            }); */
+            //popup.setOffset(MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg));
             var description = getDescription(feature);
 
-            popup.setHTML(description)
-                .addTo(map);
+            popup.setHTML(description);
+                //.addTo(map);
             spiderLeg.mapboxMarker.setPopup(popup);
       
     })

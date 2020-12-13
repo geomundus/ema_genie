@@ -513,20 +513,12 @@ var spiderifier = new MapboxglSpiderifier(map, {
         spiderLeg.mapboxMarker.setPopup(popup);
       })
       .on('mouseup', function(){
-        //e.preventDefault();
-        //e.stopPropagation();
-        //popup.remove()
         map.spiderifierClicked=true;
-        popup = new mapboxgl.Popup({
-            closeButton: false,
-            closeOnClick: false,
-            offset: MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg)
-        });
 
         var description = getDescription(feature);
 
-        popup.setHTML(description)
-            .addTo(map);
+        popup.setHTML(description);
+            //.addTo(map);
         spiderLeg.mapboxMarker.setPopup(popup);
   
 })
