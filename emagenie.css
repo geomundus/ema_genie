@@ -32,6 +32,14 @@ body {
     margin-top: -38.5px;
     background-image: url(https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/images/marker-icon.png);
   }
+  .spider-leg-container .marker {
+    background-image: url('images/college-15.png');
+    background-size: cover;
+    width: 25px;
+    height: 25px;
+    /*border-radius: 50%;*/
+    cursor: pointer;
+  }
   
   .spider-leg-container .spider-leg-line {
     position: absolute;
@@ -240,3 +248,5 @@ body {
   #menu a.active:hover {
       background: #3074a4;
   }
+
+ 

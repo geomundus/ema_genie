@@ -91,7 +91,7 @@ $(document).ready(function () {
     }, function (err, data) {
 
         map.on('load', function () {
-            map.loadImage('images/college-15.png', function(error, image) {
+            map.loadImage('images/user-circle-solid-54px.png', function(error, image) {
                 if (error) throw error;
                 // add image to the active style and make it SDF-enabled
                 map.addImage('college', image, { sdf: true });
@@ -127,7 +127,7 @@ $(document).ready(function () {
                 'filter': ['!=', 'cluster', true],
                 'layout': {
                     'icon-image': 'college',
-                    'icon-size': 1.7
+                    'icon-size': .5
                     },
                 'paint': {
                     'icon-color': [
@@ -163,7 +163,7 @@ $(document).ready(function () {
                     'visibility':'none',
                     'icon-image': 'college',
                     'icon-allow-overlap': true,
-                    'icon-size': 1.7
+                    'icon-size': .5
                     },
                 'paint': {
                     'icon-color': [
@@ -483,14 +483,13 @@ var spiderifier = new MapboxglSpiderifier(map, {
     var feature = spiderLeg.feature;
     var popup;
     pinElem.className = pinElem.className + ' fa-stack fa-lg';
-    pinElem.innerHTML = '<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
-                            '<i class="type-icon fa fa-user-circle fa-stack-1x"></i>';
-/*     pinElem.className = pinElem.className + ' fa-stack fa-lg';
-    pinElem.innerHTML = //'<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
-                            '<div style="background-image:url(images/college-15.svg);" class="type-icon fa-user-circle fa-stack-1x"></div>';
-       */                  
+     pinElem.innerHTML = //'<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
+                            '<i class="type-icon fas fa-user-circle fa-stack-1x"></i>'; 
+/*     pinElem.innerHTML = //'<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
+                            '<div class="type-icon fa marker fa-stack-2x" style="background-color:'+ feature.color +'"></div>';
+             */          
+           // fa-graduation-cap
     pinElem.style.color = feature.color;
-
     $(pinElem)
       .on('mouseenter', function(){
         popup = new mapboxgl.Popup({
