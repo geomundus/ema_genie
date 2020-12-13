@@ -359,12 +359,16 @@ $(document).ready(function () {
                 }   
             }
             map.on("click",function(e){
-                spiderifier.unspiderfy();
                 if(map.markerClicked){
                     e.cluster_id = map.markerClickedCluster;
                     map.markerClick(e);
+                }else if(map.spiderifierClicked){
+                    //do nothing
+                }else{
+                    spiderifier.unspiderfy();
                 }
                 map.markerClicked=false;
+                map.spiderifierClicked=false;
             });
             
             // Retrieve cluster leaves on click
@@ -472,9 +476,7 @@ var spiderifier = new MapboxglSpiderifier(map, {
     animate: true,
     animationSpeed: 100,
     customPin: true,
-    onClick: function(e, spiderLeg){
-      //console.log(spiderLeg);
-    },
+    //onClick: function(e, spiderLeg){},
     initializeLeg: initializeSpiderLeg
   });
 
@@ -506,6 +508,21 @@ var spiderifier = new MapboxglSpiderifier(map, {
 
         spiderLeg.mapboxMarker.setPopup(popup);
       })
+      .on('mousedown', function(){
+            map.spiderifierClicked=true;
+            popup = new mapboxgl.Popup({
+                closeButton: true,
+                closeOnClick: false,
+                offset: MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg)
+            });
+
+            var description = getDescription(feature);
+
+            popup.setHTML(description)
+                .addTo(map);
+            spiderLeg.mapboxMarker.setPopup(popup);
+      
+    })
       .on('mouseleave', function(){
         if(popup){
           popup.remove();

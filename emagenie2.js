@@ -506,6 +506,21 @@ var spiderifier = new MapboxglSpiderifier(map, {
 
         spiderLeg.mapboxMarker.setPopup(popup);
       })
+      .on('click', function(){
+        popup = new mapboxgl.Popup({
+          closeButton: true,
+          closeOnClick: false,
+          offset: MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg)
+        });
+
+          var description = getDescription(feature);
+
+          //add Popup to map
+          popup.setHTML(description)
+          .addTo(map);
+
+        spiderLeg.mapboxMarker.setPopup(popup);
+      })
       .on('mouseleave', function(){
         if(popup){
           popup.remove();
