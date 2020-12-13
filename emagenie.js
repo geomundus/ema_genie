@@ -218,24 +218,6 @@ $(document).ready(function () {
                     }
                 }
             });
-             filterInput.addEventListener('keyup', function (e) {
-                if (e.keyCode === 13) {
-                    // Cancel the default action, if needed
-                    e.preventDefault();                    
-                    var value = e.target.value.toLowerCase();
-                    for(var i=0; i < availableTags.length; i++){
-                        var city = availableTags[i].toLowerCase();
-                        if(city.indexOf(value)>=0){
-                            map.flyTo({
-                                center: listOfCoordinates[i],
-                                essential: true,
-                                zoom: 6
-                            });
-                        }                   
-                    }
-                    this.click();
-                  }
-            }); 
         
             // Create a popup, but don't add it to the map yet.
             popup = new mapboxgl.Popup({
