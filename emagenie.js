@@ -2,7 +2,7 @@ var filterInput = document.getElementById('filter-input');
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ2VvbXVuZHVzIiwiYSI6ImNqM3BoMDVlYjAwam8zMnBmNm1ndWs3bnYifQ.McVUJig2reapiExh7EPOpw';
 var map = new mapboxgl.Map({
     container: 'map',
-    zoom: 7,
+    zoom: 1,
     //center: [0, 20],
     center: [11,48],
     //style: 'mapbox://styles/mapbox/light-v10'
@@ -298,9 +298,11 @@ $(document).ready(function () {
                         marker = map.markers[id] = new mapboxgl.Marker({
                             element: el
                         }).setLngLat(coords);
-                        var point = new mapboxgl.Point(coords);
                         marker.getElement().addEventListener('mouseenter', function(){this.style.cursor='pointer';});
-                        marker.getElement().addEventListener('click', function(){map.markerClick(point)});
+                        marker.getElement().addEventListener('click', function(){
+                            map.markerClicked=true;
+                            map.markerClickedCluster = this.firstChild.dataset.clusterId;
+                        });
                     }
 
                     newMarkers[id] = marker;
@@ -329,26 +331,48 @@ $(document).ready(function () {
                     map.showMarkersByLayer("fieldOfStudy");
                 }
             }
-
-            map.on("click",spiderifier.unspiderfy);
+            map.getMarkerColorByProperties = function(property){
+                if(property.City){
+                    let idx;
+                    if(!map.getLayer("ema_genie_occupation").isHidden()){
+                        idx = occupations.indexOf(property["Main occupation"]);
+                        idx = idx==-1 ? occupations.indexOf("Other") : idx
+                        return colors[idx];
+                    }else{
+                        idx = idx==-1 ? fieldOfStudies.indexOf("Other") : idx
+                        idx = fieldOfStudies.indexOf(property["Field of study"]);
+                        return colors[idx];
+                    }
+                }   
+            }
+            map.on("click",function(e){
+                spiderifier.unspiderfy();
+                if(map.markerClicked){
+                    e.cluster_id = map.markerClickedCluster;
+                    map.markerClick(e);
+                }
+                map.markerClicked=false;
+            });
+            
             // Retrieve cluster leaves on click
-            map.markerClick = function(point) {
-/*                 var features = map.queryRenderedFeatures(point,
-                    { layers: ['ema_genie_occupation','ema_genie_fieldOfStudy','ema_genie_occupation_label','ema_genie_fieldOfStudy_label']
-                }); */
+            map.markerClick = function(e) {
+                var center = [e.lngLat.lng,e.lngLat.lat];
 
+                map.flyTo({
+                    center: center,
+                });
                 var features = map.querySourceFeatures("ema_genie");
                 var feature = null;
-                for(var i=0; i<features.length;i++){
-                    if(features[i].type==='Feature'){
+                 for(var i=0; i < features.length;i++){
+                    if(features[i].properties.cluster_id==e.cluster_id){
                         feature = features[i];
                         break;
                     }else{
                         continue;
                     }
-                }
-                console.log(feature);
-
+                } 
+                console.log(e.cluster_id);
+                
                 var clusterSource = map.getSource("ema_genie");
                 spiderifier.unspiderfy();
                 if (!feature) {
@@ -360,7 +384,8 @@ $(document).ready(function () {
                             return console.error('error while getting leaves of a cluster', err);
                         }
                         var markers = _.map(leafFeatures, function(leafFeature){ 
-                            leafFeature.properties.color = _.sample(iconColors);
+                            leafFeature.properties.color = map.getMarkerColorByProperties(leafFeature.properties);
+
                             return leafFeature.properties;
                         });
 
@@ -429,7 +454,6 @@ function getDescription(feature){
           `</h4><h4><b>` + `EMJMD: ` + `</b>` + feature.EMJMD + 
           `</h4><h4><b>Enrolled:</b> ` + feature["Start year"] + `</h4>`;
 }
-var iconColors = ['red', 'blue', 'green', 'orange', '#ab1234', '#112312'];
 
 var spiderifier = new MapboxglSpiderifier(map, {
     animate: true,
@@ -499,7 +523,7 @@ function createDonutChart(props) {
         var w = r * 2;
     
         html +=
-            '<div class="'+ layer +'"><svg width="' +
+            '<div data-cluster-id="' + props.cluster_id +'" class="'+ layer +'"><svg  width="' +
             w +
             '" height="' +
             w +
