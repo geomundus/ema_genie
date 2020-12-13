@@ -339,8 +339,8 @@ $(document).ready(function () {
                         idx = idx==-1 ? occupations.indexOf("Other") : idx
                         return colors[idx];
                     }else{
-                        idx = idx==-1 ? fieldOfStudies.indexOf("Other") : idx
                         idx = fieldOfStudies.indexOf(property["Field of study"]);
+                        idx = idx==-1 ? fieldOfStudies.indexOf("Other") : idx
                         return colors[idx];
                     }
                 }   
