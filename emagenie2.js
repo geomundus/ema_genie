@@ -359,12 +359,18 @@ $(document).ready(function () {
                 }   
             }
             map.on("click",function(e){
-                spiderifier.unspiderfy();
                 if(map.markerClicked){
                     e.cluster_id = map.markerClickedCluster;
                     map.markerClick(e);
+                    spiderifier.unspiderfy();
+                }else if(map.spiderifierClicked){
+                    //popup.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+                    //popup.addTo(map);
+                }else{
+                    spiderifier.unspiderfy();
                 }
                 map.markerClicked=false;
+                map.spiderifierClicked=false;
             });
             
             // Retrieve cluster leaves on click
@@ -506,21 +512,24 @@ var spiderifier = new MapboxglSpiderifier(map, {
 
         spiderLeg.mapboxMarker.setPopup(popup);
       })
-      .on('click', function(){
+      .on('mouseup', function(){
+        //e.preventDefault();
+        //e.stopPropagation();
+        //popup.remove()
+        map.spiderifierClicked=true;
         popup = new mapboxgl.Popup({
-          closeButton: true,
-          closeOnClick: false,
-          offset: MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg)
+            closeButton: false,
+            closeOnClick: false,
+            offset: MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg)
         });
 
-          var description = getDescription(feature);
+        var description = getDescription(feature);
 
-          //add Popup to map
-          popup.setHTML(description)
-          .addTo(map);
-
+        popup.setHTML(description)
+            .addTo(map);
         spiderLeg.mapboxMarker.setPopup(popup);
-      })
+  
+})
       .on('mouseleave', function(){
         if(popup){
           popup.remove();

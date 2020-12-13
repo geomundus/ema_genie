@@ -189,7 +189,7 @@ $(document).ready(function () {
             });
         
             // Create a popup, but don't add it to the map yet.
-            var popup = new mapboxgl.Popup({
+            popup = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false
             });
@@ -362,8 +362,10 @@ $(document).ready(function () {
                 if(map.markerClicked){
                     e.cluster_id = map.markerClickedCluster;
                     map.markerClick(e);
+                    spiderifier.unspiderfy();
                 }else if(map.spiderifierClicked){
-                    //do nothing
+                    //popup.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+                    //popup.addTo(map);
                 }else{
                     spiderifier.unspiderfy();
                 }
@@ -479,13 +481,12 @@ var spiderifier = new MapboxglSpiderifier(map, {
     //onClick: function(e, spiderLeg){},
     initializeLeg: initializeSpiderLeg
   });
-
+var popup;
   function initializeSpiderLeg(spiderLeg){
     var pinElem = spiderLeg.elements.pin;
     var feature = spiderLeg.feature;
-    var popup;
     pinElem.className = pinElem.className + ' fa-stack fa-lg';
-     pinElem.innerHTML = //'<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
+    pinElem.innerHTML = //'<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
                             '<i class="type-icon fas fa-user-circle fa-stack-1x"></i>'; 
 /*     pinElem.innerHTML = //'<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
                             '<div class="type-icon fa marker fa-stack-2x" style="background-color:'+ feature.color +'"></div>';
@@ -495,7 +496,7 @@ var spiderifier = new MapboxglSpiderifier(map, {
     $(pinElem)
       .on('mouseenter', function(){
         popup = new mapboxgl.Popup({
-          closeButton: true,
+          closeButton: false,
           closeOnClick: false,
           offset: MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg)
         });
@@ -508,10 +509,13 @@ var spiderifier = new MapboxglSpiderifier(map, {
 
         spiderLeg.mapboxMarker.setPopup(popup);
       })
-      .on('mousedown', function(){
+      .on('mouseup', function(){
+            //e.preventDefault();
+            //e.stopPropagation();
+            //popup.remove()
             map.spiderifierClicked=true;
             popup = new mapboxgl.Popup({
-                closeButton: true,
+                closeButton: false,
                 closeOnClick: false,
                 offset: MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg)
             });
