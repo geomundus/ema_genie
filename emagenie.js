@@ -1,4 +1,6 @@
 var filterInput = document.getElementById('filter-input');
+var availableTags = [];
+var listOfCoordinates = [];
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ2VvbXVuZHVzIiwiYSI6ImNqM3BoMDVlYjAwam8zMnBmNm1ndWs3bnYifQ.McVUJig2reapiExh7EPOpw';
 var map = new mapboxgl.Map({
     container: 'map',
@@ -90,7 +92,9 @@ $(document).ready(function () {
       delimiter: ','
     }, function (err, data) {
 
+
         map.on('load', function () {
+
             map.loadImage('images/user-circle-solid-54px.png', function(error, image) {
                 if (error) throw error;
                 // add image to the active style and make it SDF-enabled
@@ -185,6 +189,33 @@ $(document).ready(function () {
                         colors[7]
                     ],
                     //'icon-opacity': 0.9,
+                }
+            });
+
+            for(var i=0; i < data.features.length; i++){
+                var feature = data.features[i];
+                var city = feature.properties.City;
+                if(availableTags.indexOf(city)===-1){
+                    availableTags.push(city);
+                    listOfCoordinates.push(feature.geometry.coordinates);
+                }
+            }           
+            
+            $("#filter-input").autocomplete({
+                source: availableTags,
+                select: function( e, ui ) {
+                    //e.preventDefault();                    
+                    var value = e.target.value.toLowerCase();
+                    for(var i=0; i < availableTags.length; i++){
+                        var city = availableTags[i].toLowerCase();
+                        if(city.indexOf(value)>=0){
+                            map.flyTo({
+                                center: listOfCoordinates[i],
+                                essential: true,
+                                zoom: 6
+                            });
+                        }                   
+                    }
                 }
             });
         
