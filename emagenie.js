@@ -91,6 +91,11 @@ $(document).ready(function () {
     }, function (err, data) {
 
         map.on('load', function () {
+            map.loadImage('images/college-15.png', function(error, image) {
+                if (error) throw error;
+                // add image to the active style and make it SDF-enabled
+                map.addImage('college', image, { sdf: true });
+              
             map.addSource('ema_genie', {
                 'type': 'geojson',
                 'data': data,
@@ -117,11 +122,15 @@ $(document).ready(function () {
             // circle and symbol layers for rendering individual ema_genie (unclustered points)
             map.addLayer({
                 'id': 'ema_genie_occupation',
-                'type': 'circle',
+                'type': 'symbol',
                 'source': 'ema_genie',
                 'filter': ['!=', 'cluster', true],
+                'layout': {
+                    'icon-image': 'college',
+                    'icon-size': 1.7
+                    },
                 'paint': {
-                    'circle-color': [
+                    'icon-color': [
                         'case',
                         occupation1,
                         colors[0],
@@ -139,20 +148,25 @@ $(document).ready(function () {
                         colors[6],
                         colors[7]
                     ],
-                    'circle-opacity': 0.9,
-                    'circle-radius': 12
+                   // 'icon-opacity': 0.9,
                 }
             });
             map.showLegendByLayer('ema_genie_occupation');
 
             map.addLayer({
                 'id': 'ema_genie_fieldOfStudy',
-                'type': 'circle',
+                'type': 'symbol',
                 'source': 'ema_genie',
                 'filter': ['!=', 'cluster', true],
-                'layout': {'visibility':'none'},
+                //'layout': {'visibility':'none'},
+                'layout': {
+                    'visibility':'none',
+                    'icon-image': 'college',
+                    'icon-allow-overlap': true,
+                    'icon-size': 1.7
+                    },
                 'paint': {
-                    'circle-color': [
+                    'icon-color': [
                         'case',
                         fieldOfStudy1,
                         colors[0],
@@ -170,11 +184,10 @@ $(document).ready(function () {
                         colors[6],
                         colors[7]
                     ],
-                    'circle-opacity': 0.9,
-                    'circle-radius': 12
+                    //'icon-opacity': 0.9,
                 }
             });
-
+        
             // Create a popup, but don't add it to the map yet.
             var popup = new mapboxgl.Popup({
                 closeButton: false,
@@ -370,9 +383,7 @@ $(document).ready(function () {
                     }else{
                         continue;
                     }
-                } 
-                console.log(e.cluster_id);
-                
+                }                 
                 var clusterSource = map.getSource("ema_genie");
                 spiderifier.unspiderfy();
                 if (!feature) {
@@ -445,6 +456,8 @@ $(document).ready(function () {
             }
         });
     });
+});
+
 };
 });
 function getDescription(feature){
@@ -472,6 +485,10 @@ var spiderifier = new MapboxglSpiderifier(map, {
     pinElem.className = pinElem.className + ' fa-stack fa-lg';
     pinElem.innerHTML = '<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
                             '<i class="type-icon fa fa-user-circle fa-stack-1x"></i>';
+/*     pinElem.className = pinElem.className + ' fa-stack fa-lg';
+    pinElem.innerHTML = //'<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
+                            '<div style="background-image:url(images/college-15.svg);" class="type-icon fa-user-circle fa-stack-1x"></div>';
+       */                  
     pinElem.style.color = feature.color;
 
     $(pinElem)
