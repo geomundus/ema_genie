@@ -9,10 +9,95 @@ body {
     bottom: 0;
     width: 100%;
   }
+  
+  .spider-leg-container {
+    width: 1px;
+    height: 1px;
+    overflow: display;
+    will-change: transform;
+  }
+  
+  .spider-leg-container:hover { cursor: pointer }
+  
+  .spider-leg-container .spider-leg-pin {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .spider-leg-container .spider-leg-pin.default-spider-pin{
+    position: relative;
+    width: 25px;
+    height: 41px;
+    margin-left: -11.5px;
+    margin-top: -38.5px;
+    background-image: url(https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/images/marker-icon.png);
+  }
+  
+  .spider-leg-container .spider-leg-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    background-color: #343434;
+    opacity: 0.45;
+    transform-origin: bottom;
+    z-index: 0;
+    height: 0;
+  }
+  
+  .spider-leg-container:hover .spider-leg-line { opacity: 1 }
+  
+  /* Animations specific styles */
+  
+  .spider-leg-container.animate {
+    -webkit-transition: margin 0.15s linear;
+    -moz-transition: margin 0.15s linear;
+    -ms-transition: margin 0.15s linear;
+    -o-transition: margin 0.15s linear;
+    transition: margin 0.15s linear;
+  }
+  
+  .spider-leg-container.initial,
+  .spider-leg-container.exit {
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    height: 0;
+  }
+  
+  .spider-leg-container.animate .spider-leg-line {
+    -webkit-transition: all 0.15s linear;
+    -moz-transition: all 0.15s linear;
+    -ms-transition: all 0.15s linear;
+    -o-transition: all 0.15s linear;
+    transition: all 0.15s linear;
+  
+    -webkit-transition-delay: inherit;
+    -moz-transition-delay: inherit;
+    -ms-transition-delay: inherit;
+    -o-transition-delay: inherit;
+    transition-delay: inherit;
+  }
+  
+  .spider-leg-container.animate.initial .spider-leg-line,
+  .spider-leg-container.animate.exit .spider-leg-line { height: 0 !important }
+
+  .spider-leg-container .spider-leg-pin {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin-left: -20px;
+    margin-top: -20px;
+    font-size: 20px;
+    z-index: 2;
+  }
+  .spider-leg-container .spider-leg-pin i.type-icon {
+    color: white;
+  }
   /* Popup styling */
 
   .mapboxgl-popup {
     padding-bottom: 5px;
+    border-radius: 3px;
   }
 
   .mapboxgl-popup-close-button {
@@ -30,7 +115,8 @@ body {
   }
 
   .mapboxgl-popup-content h3 {
-    background: rgb(61, 59, 59);
+    /*background: rgb(61, 59, 59);*/
+    background: #3887be;
     text-align: center;
     color: #fff;
     margin: 0;
@@ -38,17 +124,21 @@ body {
     padding: 15px;
     font-weight: 700;
     margin-top: -5px;
+    font-size: 13px!important;
   }
 
   .mapboxgl-popup-content h4 {
     margin: 0;
     display: block;
-    padding: 10px 3px 10px 10px;
+    padding: 5px 10px 5px 10px;
     font-weight: 400;
-  }
+    font-size: 12px!important;
+    line-height: 1.45;
+}
 
   .mapboxgl-container {
     cursor: pointer;
+    
   }
 
   .mapboxgl-popup-anchor-top>.mapboxgl-popup-content {

@@ -2,10 +2,13 @@ var filterInput = document.getElementById('filter-input');
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ2VvbXVuZHVzIiwiYSI6ImNqM3BoMDVlYjAwam8zMnBmNm1ndWs3bnYifQ.McVUJig2reapiExh7EPOpw';
 var map = new mapboxgl.Map({
     container: 'map',
-    zoom: 1,
-    center: [0, 20],
+    zoom: 7,
+    //center: [0, 20],
+    center: [11,48],
     //style: 'mapbox://styles/mapbox/light-v10'
-    style: 'mapbox://styles/geomundus/ckic4cpgt1cn919pmztwnpgum'
+    style: 'mapbox://styles/geomundus/ckic4cpgt1cn919pmztwnpgum',
+    maxZoom: 9,
+    maxBounds:[[-200,-59],[200,83]]
 });
 
 map.addControl(new mapboxgl.NavigationControl());
@@ -14,7 +17,7 @@ map.addControl(new mapboxgl.NavigationControl());
 const occupations = ['I recently graduated and I am looking for a job','I work in a private company','I am a 1st year Master student','I work for the government','I am a researcher/doing my PhD','I work at a university or public institute','Other'];
 const fieldOfStudies = ['Natural Sciences (Astronomy, Biology, Chemistry, Earth Science, Environment and Physics)','Engineering and Technology','Social Sciences and Humanities','Geography','Economic Science','Cultural Science','Other'];
 // colors to use for the categories
-const colors = ['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd','#ccebc5','#ffed6f'];
+const colors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
 
 function fillLegend(listOfValues,className){
     for (i = 0; i < listOfValues.length; i++) {
@@ -64,12 +67,12 @@ var fieldOfStudy3 = ['==', ['get', 'Field of study'], fieldOfStudies[2]];
 var fieldOfStudy4 = ['==', ['get', 'Field of study'], fieldOfStudies[3]];
 var fieldOfStudy5 = ['==', ['get', 'Field of study'], fieldOfStudies[4]];
 var fieldOfStudy6 = ['==', ['get', 'Field of study'], fieldOfStudies[5]];
-var fieldOfStudy7 = ['all', ['!=', ['get', 'Field of study'], occupations[0]], 
-                          ['!=', ['get', 'Field of study'], occupations[1]],
-                          ['!=', ['get', 'Field of study'], occupations[2]],
-                          ['!=', ['get', 'Field of study'], occupations[3]],
-                          ['!=', ['get', 'Field of study'], occupations[4]],
-                          ['!=', ['get', 'Field of study'], occupations[5]]];
+var fieldOfStudy7 = ['all', ['!=', ['get', 'Field of study'], fieldOfStudies[0]], 
+                          ['!=', ['get', 'Field of study'], fieldOfStudies[1]],
+                          ['!=', ['get', 'Field of study'], fieldOfStudies[2]],
+                          ['!=', ['get', 'Field of study'], fieldOfStudies[3]],
+                          ['!=', ['get', 'Field of study'], fieldOfStudies[4]],
+                          ['!=', ['get', 'Field of study'], fieldOfStudies[5]]];
 
 $(document).ready(function () {
   $.ajax({
@@ -179,28 +182,22 @@ $(document).ready(function () {
             });
             function updatePopup(e){
                 var coordinates = e.features[0].geometry.coordinates.slice();
+                var featureProperty = e.features[0].properties;
 
                 //set popup text 
-                //You can adjust the values of the popup to match the headers of your CSV. 
-                // For example: e.features[0].properties.Name is retrieving information from the field Name in the original CSV. 
-                var description = `<h3>` + e.features[0].properties["Main occupation"] + `</h3>` + 
-                `<h4>` + `<b>` + `Address: ` + `</b>` + e.features[0].properties.Addresse + 
-                `<br><b>` + `Field of study: ` + `</b>` + e.features[0].properties["Field of study"] +
-                `<br><b>` + `EMJMD: ` + `</b>` + e.features[0].properties.EMJMD + 
-                `<br><b>Start year:</b> ` + e.features[0].properties["Start year"] + `</h4>`;
+                var description = getDescription(featureProperty);
 
                 // Ensure that if the map is zoomed out such that multiples
-                // copies of the feature are visible, the popup appears
-                // over the copy being pointed to.
+                // copies of the feature are visible, the popup appears over the copy being pointed to.
                 while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                     coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
                 }
 
                 //add Popup to map
                 popup = new mapboxgl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(description)
-                .addTo(map);
+                    .setLngLat(coordinates)
+                    .setHTML(description)
+                    .addTo(map);
             }
   
 
@@ -208,22 +205,28 @@ $(document).ready(function () {
                 map.flyTo({
                     center:[e.lngLat.lng, e.lngLat.lat],
                 });
-
                 updatePopup(e);
 
             });
 
+            map.on('click', 'ema_genie_fieldOfStudy', function (e) {
+                map.flyTo({
+                    center:[e.lngLat.lng, e.lngLat.lat],
+                });
+                updatePopup(e);
+
+            });
 
             map.on('mouseenter', 'ema_genie_occupation', function (e) {
                 map.getCanvas().style.cursor = 'pointer';      
                 updatePopup(e);
             });
-
+ 
             map.on('mouseleave', 'ema_genie_occupation', function () {
                 map.getCanvas().style.cursor = '';
                 popup.remove();
             });
-
+ 
             map.on('mouseenter', 'ema_genie_fieldOfStudy', function (e) {
                 map.getCanvas().style.cursor = 'pointer';      
                 updatePopup(e);
@@ -291,15 +294,16 @@ $(document).ready(function () {
 
                     var marker = map.markers[id];
                     if (!marker) {
-                        var what = map.getLayer("ema_genie_occupation").isHidden()==true ? "fieldOfStudy" : "occupation";
-                        var el = createDonutChart(props,what);
+                        var el = createDonutChart(props);
                         marker = map.markers[id] = new mapboxgl.Marker({
                             element: el
                         }).setLngLat(coords);
-                        marker.getElement().addEventListener('click', map.markerClick);
+                        var point = new mapboxgl.Point(coords);
+                        marker.getElement().addEventListener('mouseenter', function(){this.style.cursor='pointer';});
+                        marker.getElement().addEventListener('click', function(){map.markerClick(point)});
                     }
-                    newMarkers[id] = marker;
 
+                    newMarkers[id] = marker;
                     if (!map.markersOnScreen[id]) marker.addTo(map);
                 }
                 // for every marker we've added previously, remove those that are no longer visible
@@ -307,6 +311,63 @@ $(document).ready(function () {
                     if (!newMarkers[id]) map.markersOnScreen[id].remove();
                 }
                 map.markersOnScreen = newMarkers;
+                map.toggleMarkers();
+            }
+            map.showMarkersByLayer = function(property){
+                $('.mapboxgl-marker .' + property).show();
+            }
+            map.hideMarkersByLayer = function(property){
+                $('.mapboxgl-marker .' + property).hide();
+            }
+            
+            map.toggleMarkers = function(){
+                if(!map.getLayer("ema_genie_occupation").isHidden()){
+                    map.showMarkersByLayer("occupation");
+                    map.hideMarkersByLayer("fieldOfStudy");
+                }else{
+                    map.hideMarkersByLayer("occupation");
+                    map.showMarkersByLayer("fieldOfStudy");
+                }
+            }
+
+            map.on("click",spiderifier.unspiderfy);
+            // Retrieve cluster leaves on click
+            map.markerClick = function(point) {
+/*                 var features = map.queryRenderedFeatures(point,
+                    { layers: ['ema_genie_occupation','ema_genie_fieldOfStudy','ema_genie_occupation_label','ema_genie_fieldOfStudy_label']
+                }); */
+
+                var features = map.querySourceFeatures("ema_genie");
+                var feature = null;
+                for(var i=0; i<features.length;i++){
+                    if(features[i].type==='Feature'){
+                        feature = features[i];
+                        break;
+                    }else{
+                        continue;
+                    }
+                }
+                console.log(feature);
+
+                var clusterSource = map.getSource("ema_genie");
+                spiderifier.unspiderfy();
+                if (!feature) {
+                      return;
+                } else {
+
+                    clusterSource.getClusterLeaves(feature.properties.cluster_id,100,0, function(err, leafFeatures){
+                        if (err) {
+                            return console.error('error while getting leaves of a cluster', err);
+                        }
+                        var markers = _.map(leafFeatures, function(leafFeature){ 
+                            leafFeature.properties.color = _.sample(iconColors);
+                            return leafFeature.properties;
+                        });
+
+                        spiderifier.spiderfy(feature.geometry.coordinates, markers);
+                        }
+                    );
+                }
             }   
 
             // after the GeoJSON data is loaded, update markers on the screen and do so on every map move/moveend
@@ -318,58 +379,36 @@ $(document).ready(function () {
 
                 map.updateMarkers();
             });
-            map.on("click",spiderifier.unspiderfy);
-            // Retrieve cluster leaves on click
-            map.markerClick = function() {
-                var features = map.querySourceFeatures("ema_genie");
-                var source="ema_genie";
-
-                var clusterSource = map.getSource(source);
-                spiderifier.unspiderfy();
-                if (!features.length || map.getZoom()<7) {
-                      return;
-                } else {
-                    clusterSource.getClusterLeaves(features[0].properties.cluster_id,100,0, function(err, leafFeatures){
-                        if (err) {
-                            return console.error('error while getting leaves of a cluster', err);
-                        }
-                        var markers = _.map(leafFeatures, function(leafFeature){
-                            return leafFeature.properties;
-                        });
-                        spiderifier.spiderfy(features[0].geometry.coordinates, markers);
-                        }
-                    );
-                }
-            }
             
-
-
-            var toggleableLayers = [{source: 'ema_genie',id:'ema_genie_occupation',name:'Occupation',className:'active'}, {source:'ema_genie',id:'ema_genie_fieldOfStudy',name:'Field of study',className:''}];
+            var toggleableLayers = [
+                {source: 'ema_genie',id:'ema_genie_occupation',name:'Occupation',className:'active'}, 
+                {source:'ema_genie',id:'ema_genie_fieldOfStudy',name:'Field of study',className:''}
+            ];
             
             // set up the corresponding toggle button for each layer
             for (var i = 0; i < toggleableLayers.length; i++) {
-                var id = toggleableLayers[i].id;
-                var name = toggleableLayers[i].name;
-                var className = toggleableLayers[i].className;
-                var source = toggleableLayers[i].source;
                 var link = document.createElement('a');
+
+                link.dataset.id = toggleableLayers[i].id;
+                link.dataset.source  = toggleableLayers[i].source;
+                link.textContent = toggleableLayers[i].name;
+                link.className = toggleableLayers[i].className;
                 link.href = '#';
-                link.className = className;
-                link.textContent = name;
-                link.dataset.id = id;
-                link.dataset.source = source;
 
                 link.onclick = function (e) {
-                    var clickedLayer = this.dataset.id;
-                    var notclickedLayers =  map.getStyle().layers.filter(layer => layer.id.indexOf("ema_genie")!==-1 && layer.id!==clickedLayer); 
                     e.preventDefault();
                     e.stopPropagation();
-                    $("#menu .active").removeClass("active");
 
-                    // toggle layer visibility by changing the layout object's visibility property
+                    var clickedLayer = this.dataset.id;
+                    var clickedSource = this.dataset.source;
+                    var notclickedLayers =  map.getStyle().layers.filter(layer => layer.source==clickedSource && layer.id !== clickedLayer); 
+
+                    $("#menu .active").removeClass("active");
+                    this.className = 'active';
+
                     map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
                     map.showLegendByLayer(clickedLayer);
-                    this.className = 'active';
+
                     for(var i = 0; i < notclickedLayers.length; i++){                           
                         map.setLayoutProperty(notclickedLayers[i].id, 'visibility', 'none');
                         map.hideLegendByLayer(notclickedLayers[i].id);
@@ -378,78 +417,128 @@ $(document).ready(function () {
                 
                 var layers = document.getElementById('menu');
                 layers.appendChild(link);
-                map.updateMarkers();
             }
         });
     });
 };
 });
+function getDescription(feature){
+    return `<h3>` + feature["Main occupation"] + `</h3>` + 
+          `<h4>` + `<b>` + `Location: ` + `</b>` + feature.Addresse + 
+          `</h4><h4><b>` + `Field of study: ` + `</b>` + feature["Field of study"] +
+          `</h4><h4><b>` + `EMJMD: ` + `</b>` + feature.EMJMD + 
+          `</h4><h4><b>Enrolled:</b> ` + feature["Start year"] + `</h4>`;
+}
+var iconColors = ['red', 'blue', 'green', 'orange', '#ab1234', '#112312'];
+
 var spiderifier = new MapboxglSpiderifier(map, {
+    animate: true,
+    animationSpeed: 100,
+    customPin: true,
     onClick: function(e, spiderLeg){
-  },
-  markerWidth: 40,
-  markerHeight: 40,
-});
-// code for creating an SVG donut chart from feature properties
-function createDonutChart(props,what) {
-    var offsets = [];
-    var counts = [];
-    for(var key in props){
-        if(props.hasOwnProperty(key) && key.indexOf("cluster")==-1 && key.indexOf("point")==-1 && key.indexOf(what)>=0){
-            counts.push(props[key]);
+      //console.log(spiderLeg);
+    },
+    initializeLeg: initializeSpiderLeg
+  });
+
+  function initializeSpiderLeg(spiderLeg){
+    var pinElem = spiderLeg.elements.pin;
+    var feature = spiderLeg.feature;
+    var popup;
+    pinElem.className = pinElem.className + ' fa-stack fa-lg';
+    pinElem.innerHTML = '<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
+                            '<i class="type-icon fa fa-user-circle fa-stack-1x"></i>';
+    pinElem.style.color = feature.color;
+
+    $(pinElem)
+      .on('mouseenter', function(){
+        popup = new mapboxgl.Popup({
+          closeButton: true,
+          closeOnClick: false,
+          offset: MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg)
+        });
+
+          var description = getDescription(feature);
+
+          //add Popup to map
+          popup.setHTML(description)
+          .addTo(map);
+
+        spiderLeg.mapboxMarker.setPopup(popup);
+      })
+      .on('mouseleave', function(){
+        if(popup){
+          popup.remove();
         }
-    }
-    var total = 0;
-    for (var i = 0; i < counts.length; i++) {
-        offsets.push(total);
-        total += counts[i];
-    }
-    var fontSize =
-        total >= 1000 ? 22 : total >= 100 ? 20 : total >= 10 ? 18 : 16;
-    var r = total >= 1000 ? 50 : total >= 100 ? 32 : total >= 10 ? 24 : 18;
-    var r0 = Math.round(r * 0.6);
-    var w = r * 2;
+      });
+  }
 
-    var html =
-        '<div><svg width="' +
-        w +
-        '" height="' +
-        w +
-        '" viewbox="0 0 ' +
-        w +
-        ' ' +
-        w +
-        '" text-anchor="middle" style="font: ' +
-        fontSize +
-        'px sans-serif; display: block">';
+// code for creating an SVG donut chart from feature properties
+function createDonutChart(props) {
 
-    for (i = 0; i < counts.length; i++) {
-        html += donutSegment(
-            offsets[i] / total,
-            (offsets[i] + counts[i]) / total,
-            r,
-            r0,
-            colors[i]
-        );
+    var layers = ["occupation", "fieldOfStudy"];
+    var html="";
+    for(var j = 0; j < layers.length; j++){
+        var offsets = [];
+        var counts = [];
+        var layer = layers[j]; 
+        for(var key in props){
+            if(props.hasOwnProperty(key) && key.indexOf(layer)>=0){
+                counts.push(props[key]);
+            }
+        }
+        var total = 0;
+        for (var i = 0; i < counts.length; i++) {
+            offsets.push(total);
+            total += counts[i];
+        }
+        var fontSize =
+            total >= 1000 ? 22 : total >= 100 ? 20 : total >= 10 ? 18 : 16;
+        var r = total >= 1000 ? 50 : total >= 100 ? 32 : total >= 10 ? 24 : 18;
+        var r0 = Math.round(r * 0.6);
+        var w = r * 2;
+    
+        html +=
+            '<div class="'+ layer +'"><svg width="' +
+            w +
+            '" height="' +
+            w +
+            '" viewbox="0 0 ' +
+            w +
+            ' ' +
+            w +
+            '" text-anchor="middle" style="font: ' +
+            fontSize +
+            'px sans-serif; display: block">';
+    
+        for (i = 0; i < counts.length; i++) {
+            html += donutSegment(
+                offsets[i] / total,
+                (offsets[i] + counts[i]) / total,
+                r,
+                r0,
+                colors[i]
+            );
+        }
+        html +=
+            '<circle cx="' +
+            r +
+            '" cy="' +
+            r +
+            '" r="' +
+            r0 +
+            '" fill="none" /><text dominant-baseline="central" transform="translate(' +
+            r +
+            ', ' +
+            r +
+            ')">' +
+            total.toLocaleString() +
+            '</text></svg></div>';
     }
-    html +=
-        '<circle cx="' +
-        r +
-        '" cy="' +
-        r +
-        '" r="' +
-        r0 +
-        '" fill="white" /><text dominant-baseline="central" transform="translate(' +
-        r +
-        ', ' +
-        r +
-        ')">' +
-        total.toLocaleString() +
-        '</text></svg></div>';
 
     var el = document.createElement('div');
     el.innerHTML = html;
-    return el.firstChild;
+    return el;
 }
 function donutSegment(start, end, r, r0, color) {
     if (end - start === 1) end -= 0.00001;
