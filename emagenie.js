@@ -375,7 +375,7 @@ $(document).ready(function () {
                     //do nothing
                 }else{
                     spiderifier.unspiderfy();
-                    map.markerElement.style.opacity = 1
+                    map.markerElement ? map.markerElement.style.opacity = 1 : null;
                 }
                 map.markerClicked=false;
                 map.spiderifierClicked=false;
