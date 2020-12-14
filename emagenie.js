@@ -15,9 +15,10 @@ var map = new mapboxgl.Map({
 
 map.addControl(new mapboxgl.NavigationControl());
 
-// filters for classifying ema_genie into five categories
-const occupations = ['I recently graduated and I am looking for a job','I work in a private company','I am a 1st year Master student','I work for the government','I am a researcher/doing my PhD','I work at a university or public institute','Other'];
+const occupations = ['I recently graduated and I am looking for a job','I work in a private company','I work for the government','I am a researcher/doing my PhD','I work at a university or public institute','I am a 1st year Master student','Other'];
+const legendOccupations = ['Student','Graduate'];
 const fieldOfStudies = ['Natural Sciences (Astronomy, Biology, Chemistry, Earth Science, Environment and Physics)','Engineering and Technology','Social Sciences and Humanities','Geography','Economic Science','Cultural Science','Other'];
+
 // colors to use for the categories
 const colors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
 
@@ -46,35 +47,6 @@ map.showLegendByLayer = function(layerId){
     $("#legend ." + layerId).show();
 }
 
-fillLegend(occupations,'ema_genie_occupation');
-fillLegend(fieldOfStudies,'ema_genie_fieldOfStudy');
-
-
-var occupation1 = ['==', ['get', 'Main occupation'], occupations[0]];
-var occupation2 = ['==', ['get', 'Main occupation'], occupations[1]];
-var occupation3 = ['==', ['get', 'Main occupation'], occupations[2]];
-var occupation4 = ['==', ['get', 'Main occupation'], occupations[3]];
-var occupation5 = ['==', ['get', 'Main occupation'], occupations[4]];
-var occupation6 = ['==', ['get', 'Main occupation'], occupations[5]];
-var occupation7 = ['all', ['!=', ['get', 'Main occupation'], occupations[0]], 
-                          ['!=', ['get', 'Main occupation'], occupations[1]],
-                          ['!=', ['get', 'Main occupation'], occupations[2]],
-                          ['!=', ['get', 'Main occupation'], occupations[3]],
-                          ['!=', ['get', 'Main occupation'], occupations[4]],
-                          ['!=', ['get', 'Main occupation'], occupations[5]]];
-
-var fieldOfStudy1 = ['==', ['get', 'Field of study'], fieldOfStudies[0]];
-var fieldOfStudy2 = ['==', ['get', 'Field of study'], fieldOfStudies[1]];
-var fieldOfStudy3 = ['==', ['get', 'Field of study'], fieldOfStudies[2]];
-var fieldOfStudy4 = ['==', ['get', 'Field of study'], fieldOfStudies[3]];
-var fieldOfStudy5 = ['==', ['get', 'Field of study'], fieldOfStudies[4]];
-var fieldOfStudy6 = ['==', ['get', 'Field of study'], fieldOfStudies[5]];
-var fieldOfStudy7 = ['all', ['!=', ['get', 'Field of study'], fieldOfStudies[0]], 
-                          ['!=', ['get', 'Field of study'], fieldOfStudies[1]],
-                          ['!=', ['get', 'Field of study'], fieldOfStudies[2]],
-                          ['!=', ['get', 'Field of study'], fieldOfStudies[3]],
-                          ['!=', ['get', 'Field of study'], fieldOfStudies[4]],
-                          ['!=', ['get', 'Field of study'], fieldOfStudies[5]]];
 
 $(document).ready(function () {
   $.ajax({
@@ -94,6 +66,54 @@ $(document).ready(function () {
 
 
         map.on('load', function () {
+            
+            for(var i=0; i < data.features.length; i++){
+                var feature = data.features[i];
+                var city = feature.properties.City;
+                var occupation = feature.properties["Main occupation"];
+                var fieldOfStudy = feature.properties["Field of study"];
+                if(availableTags.indexOf(city)===-1){
+                    availableTags.push(city);
+                    listOfCoordinates.push(feature.geometry.coordinates);
+                }
+            }   
+
+            fillLegend(legendOccupations,'ema_genie_occupation');
+            fillLegend(fieldOfStudies,'ema_genie_fieldOfStudy');
+        
+            $("#filter-input").autocomplete({
+                source: availableTags,
+                select: function( e, ui ) {
+                    var value = e.target.value.toLowerCase();
+                    for(var i=0; i < availableTags.length; i++){
+                        var city = availableTags[i].toLowerCase();
+                        if(city.indexOf(value)>=0){
+                            map.flyTo({
+                                center: listOfCoordinates[i],
+                                essential: true,
+                                zoom: 6
+                            });
+                        }                   
+                    }
+                }
+            });
+        
+
+            var occupation1 =  ['==', ['get', 'Main occupation'], 'I am a 1st year Master student'];
+            var occupation2 = ['all', ['!=', ['get', 'Main occupation'], 'I am a 1st year Master student']];
+
+            var fieldOfStudy1 = ['==', ['get', 'Field of study'], fieldOfStudies[0]];
+            var fieldOfStudy2 = ['==', ['get', 'Field of study'], fieldOfStudies[1]];
+            var fieldOfStudy3 = ['==', ['get', 'Field of study'], fieldOfStudies[2]];
+            var fieldOfStudy4 = ['==', ['get', 'Field of study'], fieldOfStudies[3]];
+            var fieldOfStudy5 = ['==', ['get', 'Field of study'], fieldOfStudies[4]];
+            var fieldOfStudy6 = ['==', ['get', 'Field of study'], fieldOfStudies[5]];
+            var fieldOfStudy7 = ['all', ['!=', ['get', 'Field of study'], fieldOfStudies[0]], 
+                                    ['!=', ['get', 'Field of study'], fieldOfStudies[1]],
+                                    ['!=', ['get', 'Field of study'], fieldOfStudies[2]],
+                                    ['!=', ['get', 'Field of study'], fieldOfStudies[3]],
+                                    ['!=', ['get', 'Field of study'], fieldOfStudies[4]],
+                                    ['!=', ['get', 'Field of study'], fieldOfStudies[5]]];
 
             map.loadImage('images/user-graduate-solid.png', function(error, image) {
                 if (error) throw error;
@@ -108,11 +128,6 @@ $(document).ready(function () {
                 'clusterProperties': {
                     'occupation1': ['+', ['case', occupation1, 1, 0]],
                     'occupation2': ['+', ['case', occupation2, 1, 0]],
-                    'occupation3': ['+', ['case', occupation3, 1, 0]],
-                    'occupation4': ['+', ['case', occupation4, 1, 0]],
-                    'occupation5': ['+', ['case', occupation5, 1, 0]],
-                    'occupation6': ['+', ['case', occupation6, 1, 0]],
-                    'occupation7': ['+', ['case', occupation7, 1, 0]],
                     'fieldOfStudy1': ['+', ['case', fieldOfStudy1, 1, 0]],
                     'fieldOfStudy2': ['+', ['case', fieldOfStudy2, 1, 0]],
                     'fieldOfStudy3': ['+', ['case', fieldOfStudy3, 1, 0]],
@@ -140,17 +155,7 @@ $(document).ready(function () {
                         colors[0],
                         occupation2,
                         colors[1],
-                        occupation3,
-                        colors[2],
-                        occupation4,
-                        colors[3],
-                        occupation5,
-                        colors[4],
-                        occupation6,
-                        colors[5],
-                        occupation7,
-                        colors[6],
-                        colors[7]
+                        colors[2]
                     ],
                 }
             });
@@ -161,7 +166,6 @@ $(document).ready(function () {
                 'type': 'symbol',
                 'source': 'ema_genie',
                 'filter': ['!=', 'cluster', true],
-                //'layout': {'visibility':'none'},
                 'layout': {
                     'visibility':'none',
                     'icon-image': 'college',
@@ -190,33 +194,6 @@ $(document).ready(function () {
                 }
             });
 
-            for(var i=0; i < data.features.length; i++){
-                var feature = data.features[i];
-                var city = feature.properties.City;
-                if(availableTags.indexOf(city)===-1){
-                    availableTags.push(city);
-                    listOfCoordinates.push(feature.geometry.coordinates);
-                }
-            }           
-            
-            $("#filter-input").autocomplete({
-                source: availableTags,
-                select: function( e, ui ) {
-                    //e.preventDefault();                    
-                    var value = e.target.value.toLowerCase();
-                    for(var i=0; i < availableTags.length; i++){
-                        var city = availableTags[i].toLowerCase();
-                        if(city.indexOf(value)>=0){
-                            map.flyTo({
-                                center: listOfCoordinates[i],
-                                essential: true,
-                                zoom: 6
-                            });
-                        }                   
-                    }
-                }
-            });
-        
             // Create a popup, but don't add it to the map yet.
             popup = new mapboxgl.Popup({
                 closeButton: false,
@@ -342,8 +319,9 @@ $(document).ready(function () {
                         }).setLngLat(coords);
                         marker.getElement().addEventListener('mouseenter', function(){this.style.cursor='pointer';});
                         marker.getElement().addEventListener('click', function(){
-                            map.markerClicked=true;
-                            map.markerClickedCluster = this.firstChild.dataset.clusterId;
+                            map.markerElement ? map.markerElement.style.opacity = 1 : null;
+                            map.markerElement = this;
+                            map.markerClicked = true;
                         });
                     }
 
@@ -377,8 +355,8 @@ $(document).ready(function () {
                 if(property.City){
                     let idx;
                     if(!map.getLayer("ema_genie_occupation").isHidden()){
-                        idx = occupations.indexOf(property["Main occupation"]);
-                        idx = idx==-1 ? occupations.indexOf("Other") : idx
+                        idx = property["Main occupation"] =='I am a 1st year Master student' ? 0 : 1;
+                        //idx = idx==-1 ? occupations.indexOf("Other") : idx
                         return colors[idx];
                     }else{
                         idx = fieldOfStudies.indexOf(property["Field of study"]);
@@ -389,14 +367,15 @@ $(document).ready(function () {
             }
             map.on("click",function(e){
                 if(map.markerClicked){
-                    e.cluster_id = map.markerClickedCluster;
+                    e.cluster_id = map.markerElement.firstChild.dataset.clusterId;
                     map.markerClick(e);
                     spiderifier.unspiderfy();
+                    map.markerElement.style.opacity = .3;
                 }else if(map.spiderifierClicked){
-                    //popup.setLngLat([e.lngLat.lng,e.lngLat.lat]);
-                    //popup.addTo(map);
+                    //do nothing
                 }else{
                     spiderifier.unspiderfy();
+                    map.markerElement.style.opacity = 1
                 }
                 map.markerClicked=false;
                 map.spiderifierClicked=false;
@@ -452,7 +431,7 @@ $(document).ready(function () {
             });
             
             var toggleableLayers = [
-                {source: 'ema_genie',id:'ema_genie_occupation',name:'Occupation',className:'active'}, 
+                {source: 'ema_genie',id:'ema_genie_occupation',name:'Status',className:'active'}, 
                 {source:'ema_genie',id:'ema_genie_fieldOfStudy',name:'Field of study',className:''}
             ];
             
@@ -535,20 +514,10 @@ var popup;
         spiderLeg.mapboxMarker.setPopup(popup);
       })
       .on('mouseup', function(){
-            //e.preventDefault();
-            //e.stopPropagation();
-            //popup.remove()
             map.spiderifierClicked=true;
-/*             popup = new mapboxgl.Popup({
-                closeButton: false,
-                closeOnClick: false,
-                offset: MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg)
-            }); */
-            //popup.setOffset(MapboxglSpiderifier.popupOffsetForSpiderLeg(spiderLeg));
             var description = getDescription(feature);
 
             popup.setHTML(description);
-                //.addTo(map);
             spiderLeg.mapboxMarker.setPopup(popup);
       
     })
