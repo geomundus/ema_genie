@@ -95,7 +95,7 @@ $(document).ready(function () {
 
         map.on('load', function () {
 
-            map.loadImage('images/user-circle-solid-54px.png', function(error, image) {
+            map.loadImage('images/user-graduate-solid.png', function(error, image) {
                 if (error) throw error;
                 // add image to the active style and make it SDF-enabled
                 map.addImage('college', image, { sdf: true });
@@ -131,7 +131,7 @@ $(document).ready(function () {
                 'filter': ['!=', 'cluster', true],
                 'layout': {
                     'icon-image': 'college',
-                    'icon-size': .5
+                    'icon-size': .8
                     },
                 'paint': {
                     'icon-color': [
@@ -152,7 +152,6 @@ $(document).ready(function () {
                         colors[6],
                         colors[7]
                     ],
-                   // 'icon-opacity': 0.9,
                 }
             });
             map.showLegendByLayer('ema_genie_occupation');
@@ -167,7 +166,7 @@ $(document).ready(function () {
                     'visibility':'none',
                     'icon-image': 'college',
                     'icon-allow-overlap': true,
-                    'icon-size': .5
+                    'icon-size': .8
                     },
                 'paint': {
                     'icon-color': [
@@ -188,7 +187,6 @@ $(document).ready(function () {
                         colors[6],
                         colors[7]
                     ],
-                    //'icon-opacity': 0.9,
                 }
             });
 
@@ -517,12 +515,8 @@ var popup;
     var pinElem = spiderLeg.elements.pin;
     var feature = spiderLeg.feature;
     pinElem.className = pinElem.className + ' fa-stack fa-lg';
-    pinElem.innerHTML = //'<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
-                            '<i class="type-icon fas fa-user-circle fa-stack-1x"></i>'; 
-/*     pinElem.innerHTML = //'<i class="circle-icon fa fa-circle fa-stack-2x"></i>' +
-                            '<div class="type-icon fa marker fa-stack-2x" style="background-color:'+ feature.color +'"></div>';
-             */          
-           // fa-graduation-cap
+    pinElem.innerHTML = '<i class="type-icon fas fa-user-graduate fa-stack-1x"></i>'; 
+
     pinElem.style.color = feature.color;
     $(pinElem)
       .on('mouseenter', function(){
