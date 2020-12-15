@@ -14,7 +14,7 @@ var map = new mapboxgl.Map({
 });
 
 map.addControl(new mapboxgl.NavigationControl());
-
+map.addControl(new mapboxgl.FullscreenControl());
 const occupations = ['I recently graduated and I am looking for a job','I work in a private company','I work for the government','I am a researcher/doing my PhD','I work at a university or public institute','I am a 1st year Master student','Other'];
 const legendOccupations = ['Student','Graduate'];
 const fieldOfStudies = ['Natural Sciences (Astronomy, Biology, Chemistry, Earth Science, Environment and Physics)','Engineering and Technology','Social Sciences and Humanities','Geography','Economic Science','Cultural Science','Other'];
