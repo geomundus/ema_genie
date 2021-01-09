@@ -70,7 +70,7 @@ $(document).ready(function () {
             for(var i=0; i < data.features.length; i++){
                 var feature = data.features[i];
                 var city = feature.properties.City;
-                var occupation = feature.properties["Main occupation"];
+                var occupation = feature.properties["Occupation"];
                 var fieldOfStudy = feature.properties["Field of study"];
                 if(availableTags.indexOf(city)===-1){
                     availableTags.push(city);
@@ -99,8 +99,8 @@ $(document).ready(function () {
             });
         
 
-            var occupation1 =  ['==', ['get', 'Main occupation'], 'I am a 1st year Master student'];
-            var occupation2 = ['all', ['!=', ['get', 'Main occupation'], 'I am a 1st year Master student']];
+            var occupation1 =  ['==', ['get', 'Occupation'], 'I am a 1st year Master student'];
+            var occupation2 = ['all', ['!=', ['get', 'Occupation'], 'I am a 1st year Master student']];
 
             var fieldOfStudy1 = ['==', ['get', 'Field of study'], fieldOfStudies[0]];
             var fieldOfStudy2 = ['==', ['get', 'Field of study'], fieldOfStudies[1]];
@@ -271,7 +271,7 @@ $(document).ready(function () {
                     'text-size': 10
                 },
                 'paint': {
-                    'text-color': ['case',['<', ['get', 'Main occupation'], 3],'black','white']
+                    'text-color': ['case',['<', ['get', 'Occupation'], 3],'black','white']
                 }
             });
             
@@ -355,7 +355,7 @@ $(document).ready(function () {
                 if(property.City){
                     let idx;
                     if(!map.getLayer("ema_genie_occupation").isHidden()){
-                        idx = property["Main occupation"] =='I am a 1st year Master student' ? 0 : 1;
+                        idx = property["Occupation"] =='I am a 1st year Master student' ? 0 : 1;
                         //idx = idx==-1 ? occupations.indexOf("Other") : idx
                         return colors[idx];
                     }else{
@@ -475,7 +475,7 @@ $(document).ready(function () {
 };
 });
 function getDescription(feature){
-    return `<h3>` + feature["Main occupation"] + `</h3>` + 
+    return `<h3>` + feature["Occupation"] + `</h3>` + 
           `<h4>` + `<b>` + `Location: ` + `</b>` + feature.Addresse + 
           `</h4><h4><b>` + `Field of study: ` + `</b>` + feature["Field of study"] +
           `</h4><h4><b>` + `EMJMD: ` + `</b>` + feature.EMJMD + 
